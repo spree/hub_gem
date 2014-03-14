@@ -17,7 +17,7 @@ module Spree
         if use_hmac
           data = "#{json_payload}#{timestamp}"
           sha1 = OpenSSL::Digest.new('sha1')
-          access_token = OpenSSL::HMAC.hexdigest(sha1, token, data)
+          access_token = OpenSSL::HMAC.hexdigest(sha1, access_token, data)
         end
 
         HTTParty.post(
