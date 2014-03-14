@@ -23,6 +23,7 @@ end
 
 require 'rspec/rails'
 require 'rspec/autorun'
+require 'database_cleaner'
 require 'ffaker'
 require 'hub/samples'
 
@@ -43,7 +44,7 @@ RSpec.configure do |config|
   config.include Spree::TestingSupport::ControllerRequests, :type => :controller
 
   config.fail_fast = ENV['FAIL_FAST'] || false
-  
+
   config.use_transactional_fixtures = true
   config.before do
     Spree::Hub::Config[:hub_store_id] = "234254as3423r3243"

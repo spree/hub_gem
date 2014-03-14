@@ -1,29 +1,21 @@
-require 'rubygems'
-require 'rake'
-require 'rake/testtask'
-require 'rake/packagetask'
-require 'rubygems/package_task'
-require 'rspec/core/rake_task'
-require 'spree/testing_support/common_rake'
-
+require 'bundler'
 Bundler::GemHelper.install_tasks
+
+require 'rspec/core/rake_task'
+require 'spree/testing_support/extension_rake'
+
 RSpec::Core::RakeTask.new
 
-spec = eval(File.read('spree_hub.gemspec'))
-Gem::PackageTask.new(spec) do |p|
-  p.gem_spec = spec
+task :default do
+  if Dir["spec/dummy"].empty?
+    Rake::Task[:test_app].invoke
+    Dir.chdir("../../")
+  end
+  Rake::Task[:spec].invoke
 end
 
-desc "Release to gemcutter"
-task :release do
-  version = File.read(File.expand_path("../../SPREE_VERSION", __FILE__)).strip
-  cmd = "cd pkg && gem push spree_hub-#{version}.gem"; puts cmd; system cmd
-end
-
-task :default => :spec
-
-desc "Generates a dummy app for testing"
+desc 'Generates a dummy app for testing'
 task :test_app do
-  ENV['LIB_NAME'] = 'spree/hub'
-  Rake::Task['common:test_app'].invoke
+  ENV['LIB_NAME'] = 'spree_hub'
+  Rake::Task['extension:test_app'].invoke
 end

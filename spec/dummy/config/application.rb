@@ -4,7 +4,25 @@ require 'rails/all'
 
 Bundler.require(*Rails.groups(:assets => %w(development test)))
 
-require 'spree/hub'
+
+begin
+  require 'spree_frontend'
+rescue LoadError
+  # spree_frontend is not available.
+end
+      
+begin
+  require 'spree_backend'
+rescue LoadError
+  # spree_backend is not available.
+end
+      
+begin
+  require 'spree_api'
+rescue LoadError
+  # spree_api is not available.
+end
+      require 'spree_hub'
 
 module Dummy
   class Application < Rails::Application

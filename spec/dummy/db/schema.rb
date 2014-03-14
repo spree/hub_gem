@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140311085837) do
+ActiveRecord::Schema.define(version: 20140314085744) do
 
   create_table "spree_addresses", force: true do |t|
     t.string   "firstname"
@@ -75,6 +75,7 @@ ActiveRecord::Schema.define(version: 20140311085837) do
     t.string   "calculable_type"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.text     "preferences"
   end
 
   add_index "spree_calculators", ["calculable_id", "calculable_type"], name: "index_spree_calculators_on_calculable_id_and_calculable_type"
@@ -124,6 +125,7 @@ ActiveRecord::Schema.define(version: 20140311085837) do
     t.boolean  "test_mode",   default: true
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.text     "preferences"
   end
 
   create_table "spree_inventory_units", force: true do |t|
@@ -265,6 +267,7 @@ ActiveRecord::Schema.define(version: 20140311085837) do
     t.datetime "updated_at"
     t.string   "display_on"
     t.boolean  "auto_capture"
+    t.text     "preferences"
   end
 
   add_index "spree_payment_methods", ["id", "type"], name: "index_spree_payment_methods_on_id_and_type"
@@ -292,7 +295,6 @@ ActiveRecord::Schema.define(version: 20140311085837) do
   create_table "spree_preferences", force: true do |t|
     t.text     "value"
     t.string   "key"
-    t.string   "value_type"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -387,6 +389,7 @@ ActiveRecord::Schema.define(version: 20140311085837) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "code"
+    t.text     "preferences"
   end
 
   add_index "spree_promotion_rules", ["product_group_id"], name: "index_promotion_rules_on_product_group_id"
