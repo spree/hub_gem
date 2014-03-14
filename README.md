@@ -49,4 +49,4 @@ require 'active_model/serializer'
 Spree::Hub::Client.push(ActiveModel::ArraySerializer.new(Spree::Order.complete, each_serializer: Spree::Hub::OrderSerializer, root: 'orders').to_json)
 ```
 
-Copyright (c) 2014 Peter Berkenbosch, released under the New BSD License
+Copyright (c) 2014 Spree Commerce, Inc. and other contributors, released under the New BSD License
