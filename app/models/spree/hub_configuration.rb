@@ -4,6 +4,6 @@ module Spree
     preference :hub_store_id, :string
     preference :hub_token, :string
     preference :hub_push_uri, :string, :default => "https://push.hubapp.io"
-    preference :use_hmac, :boolean, :default => true
+    preference :use_hmac, :boolean, :default => false
   end
 end

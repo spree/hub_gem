@@ -5,6 +5,7 @@ module Spree
   end
 end
 
+require 'spree/hub/client'
 require 'spree/hub/engine'
 require 'spree/hub/responder'
 
