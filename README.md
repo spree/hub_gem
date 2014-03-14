@@ -35,4 +35,18 @@ Simply add this require statement to your spec_helper:
 require 'spree_hub/factories'
 ```
 
+Sample Order Push
+-----------------
+
+Note: this will be abstracted soon in `Spree::Hub::Client`
+
+```ruby
+
+Spree::Hub::Config[:hub_store_id] = "34werwerwer"
+Spree::Hub::Config[:hub_token] = "sdfsfddfdss"
+
+require 'active_model/serializer'
+Spree::Hub::Client.push(ActiveModel::ArraySerializer.new(Spree::Order.complete, each_serializer: Spree::Hub::OrderSerializer, root: 'orders').to_json)
+```
+
 Copyright (c) 2014 Peter Berkenbosch, released under the New BSD License
