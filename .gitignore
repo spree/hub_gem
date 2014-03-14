@@ -1,0 +1,6 @@
+*.swp
+*.swo
+coverage/
+log/
+.DS_Store
+.bundle
