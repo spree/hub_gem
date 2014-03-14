@@ -4,3 +4,9 @@ coverage/
 log/
 .DS_Store
 .bundle
+nbproject
+**.gem
+Gemfile.lock
+spec/dummy/
+.rvmrc
+tmp
