@@ -8,10 +8,9 @@ module Spree
 
       has_many :line_items,  serializer: Spree::Hub::LineItemSerializer
       has_many :adjustments, serializer: Spree::Hub::AdjustmentSerializer
-      # has_many :payments
-      #
-      # has_one :shipping_address
-      # has_one :billing_address
+
+      has_one :shipping_address, serializer: Spree::Hub::AddressSerializer
+      has_one :billing_address, serializer: Spree::Hub::AddressSerializer
 
       def id
         object.number
