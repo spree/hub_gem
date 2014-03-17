@@ -17,6 +17,7 @@ module Spree
       let!(:payment_method) { create(:credit_card_payment_method) }
 
       context "#process" do
+
         context "with no order present" do
           let!(:message) { ::Hub::Samples::Order.request }
           let(:handler) { Handler::UpdateOrderHandler.new(message.to_json) }
@@ -28,8 +29,28 @@ module Spree
             expect(responder.summary).to match /Order with number R.{9} was not found/
             expect(responder.code).to eql 500
           end
+        end
+
+        context "with existing order present" do
+
+          let!(:message) {::Hub::Samples::Order.request }
+          let!(:order_hash) { message["order"] }
+
+          before do
+            @order = Handler::AddOrderHandler.new(message.to_json)
+            order_hash["channel"] = "rspec-suite"
+            message.merge({"order" => order_hash })
+            @update_handler = Handler::UpdateOrderHandler.new(message.to_json)
+          end
+
+          it "updates the existing order" do
+            responder = @update_handler.process
+            expect(responder.code).to eql 200
+            expect(@order.reload.channel).to eql "rspec-suite"
+          end
 
         end
+
       end
 
     end
