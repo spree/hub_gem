@@ -8,9 +8,6 @@ module Spree
                  :available_on, :permalink, :meta_description, :meta_keywords,
                  :shipping_category, :taxons, :options, :images
 
-
-      #has_many :images, serializer: ImageSerializer
-
       def parent_id
         object.is_master? ? nil : object.product.master.id
       end
@@ -44,6 +41,21 @@ module Spree
       end
 
       def images
+        image_set = []
+        object.images.each do |image|
+          image_hsh = {
+            url: image.attachment.url(:original),
+            position: image.position,
+            title: image.alt,
+            type: "original",
+            dimensions: {
+              height: image.attachment_height,
+              width: image.attachment_width
+            }
+          }
+          image_set << image_hsh
+        end
+        image_set
       end
 
     end

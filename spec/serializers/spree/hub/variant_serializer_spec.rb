@@ -81,6 +81,12 @@ module Spree
           end
         end
 
+        context "without images" do
+          it "returns [] for 'images'" do
+            expect(serialized_variant["images"]).to eql []
+          end
+        end
+
       end
 
     end
