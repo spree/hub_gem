@@ -2,11 +2,11 @@ require "spec_helper"
 
 module Spree
   module Hub
-    describe InventorySerializer do
+    describe StockItemSerializer do
 
       let!(:variant) { create(:variant) }
       let!(:stock_item) { variant.stock_items.first }
-      let!(:serialized_stock_item) { InventorySerializer.new(stock_item, root: false).to_json }
+      let!(:serialized_stock_item) { StockItemSerializer.new(stock_item, root: false).to_json }
 
       context "format" do
 
