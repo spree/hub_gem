@@ -10,6 +10,7 @@ module Spree
           let!(:message) do
             hsh = ::Hub::Samples::Product.request
             hsh["product"]["parent_id"] = nil
+            hsh["product"]["permalink"] = "other-permalink-then-name"
             hsh
           end
 
@@ -21,6 +22,16 @@ module Spree
 
           it "imports a new variant master in the storefront" do
             expect{handler.process}.to change{Spree::Variant.count}.by(1)
+          end
+
+          context "and with a permalink" do
+            before do
+              handler.process
+            end
+
+            it "will store the permalink as the slug" do
+              expect(Spree::Product.where(slug: message["product"]["permalink"]).count).to eql 1
+            end
           end
 
           context "response" do

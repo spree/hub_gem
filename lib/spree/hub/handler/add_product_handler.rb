@@ -13,6 +13,8 @@ module Spree
           option_types_params = params.delete(:options)
           images = params.delete(:images)
 
+          params[:slug] = permalink if permalink.present?
+
           if shipping_category_name = params.delete(:shipping_category)
             shipping_category_id = Spree::ShippingCategory.where(name: shipping_category_name).first_or_create.id
             params[:shipping_category_id] = shipping_category_id
