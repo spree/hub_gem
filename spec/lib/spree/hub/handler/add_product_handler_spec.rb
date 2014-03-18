@@ -4,6 +4,10 @@ module Spree
   module Hub
     describe Handler::AddProductHandler do
 
+      before do
+        Handler::AddProductHandler.any_instance.stub(:open).and_return File.open(File.expand_path('../../../../../fixtures/thinking-cat.jpg', __FILE__))
+      end
+
       context "#process" do
         context "with a master product (ie no parent_id)" do
 
@@ -121,6 +125,12 @@ module Spree
               handler.process
               product = Spree::Product.find_by_slug("other-permalink-then-name")
               expect(product.option_types.pluck(:name)).to eql ["color", "size"]
+            end
+          end
+
+          context "with images" do
+            it "needs to be implemted" do
+              raise "Make me work!"
             end
           end
 

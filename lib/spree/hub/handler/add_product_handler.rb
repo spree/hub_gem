@@ -1,3 +1,5 @@
+require 'open-uri'
+
 module Spree
   module Hub
     module Handler
@@ -61,6 +63,7 @@ module Spree
                 option_type.presentation = name
                 option_type.save!
               end
+              # TODO for 'variants'
               # option_type.option_values.where(name: value).first_or_initialize do |option_value|
               #   option_value.presentation = value
               #   option_value.save!
@@ -90,6 +93,17 @@ module Spree
             option_types.each do |option_type|
               product.option_types << option_type unless product.option_types.include?(option_type)
             end
+
+            if images
+              images.each do |image_hsh|
+                image = product.images.create
+                image.attachment = open(image_hsh["url"])
+                image.position = image_hsh["position"]
+                image.alt = image_hsh["title"]
+                image.save!
+              end
+            end
+
             response "Product (#{product.id}) and master variant (#{master_variant.id}) are added"
           else
             response "Could not save the Variant #{product.errors}", 500
