@@ -87,6 +87,12 @@ module Spree
           end
         end
 
+        context "images" do
+          it "serialized the original images for the variant" do
+            pending
+          end
+        end
+
       end
 
     end
