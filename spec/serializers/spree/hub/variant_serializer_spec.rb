@@ -88,8 +88,25 @@ module Spree
         end
 
         context "images" do
+
+          before do
+            ActionController::Base.asset_host = "http://myapp.dev"
+            image = File.open(File.expand_path('../../../../fixtures/thinking-cat.jpg', __FILE__))
+            3.times.each_with_index do |i|
+              variant.images.create!(attachment: image, position: i, alt: "variant image #{i}")
+            end
+          end
+
           it "serialized the original images for the variant" do
-            pending
+            expect(serialized_variant["images"].count).to be 3
+            dimension_hash = {"height" => 490, "width" => 489}
+            3.times.each_with_index do |i|
+              expect(serialized_variant["images"][i]["url"]).to match /http:\/\/myapp.dev\/spree\/products\/\d{1}\/original\/thinking-cat.jpg\?\d*/
+              expect(serialized_variant["images"][i]["position"]).to eql i
+              expect(serialized_variant["images"][i]["title"]).to eql "variant image #{i}"
+              expect(serialized_variant["images"][i]["type"]).to eql "original"
+              expect(serialized_variant["images"][i]["dimensions"]).to eql dimension_hash
+            end
           end
         end
 

@@ -44,7 +44,7 @@ module Spree
         image_set = []
         object.images.each do |image|
           image_hsh = {
-            url: image.attachment.url(:original),
+            url: add_host_prefix(image.attachment.url(:original)),
             position: image.position,
             title: image.alt,
             type: "original",
@@ -56,6 +56,12 @@ module Spree
           image_set << image_hsh
         end
         image_set
+      end
+
+      private
+
+      def add_host_prefix(url)
+        URI.join(ActionController::Base.asset_host, url).to_s
       end
 
     end
