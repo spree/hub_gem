@@ -10,7 +10,7 @@ module Spree
           parent_id = params.delete(:parent_id)
           permalink = params.delete(:permalink)
           taxons = params.delete(:taxons)
-          options = params.delete(:options)
+          option_types_params = params.delete(:options)
           images = params.delete(:images)
 
           if shipping_category_name = params.delete(:shipping_category)
