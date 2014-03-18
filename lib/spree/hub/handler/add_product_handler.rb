@@ -52,6 +52,23 @@ module Spree
             params[:taxon_ids] = Spree::Taxon.where(id: @taxon_ids).leaves.pluck(:id)
           end
 
+          # option types is a key value hash with {option_type_name => option_type_value}
+          # {"color"=>"GREY", "size"=>"S"}
+          option_types = []
+          if option_types_params
+            option_types_params.each do |name, value|
+              option_type = Spree::OptionType.where(name: name).first_or_initialize do |option_type|
+                option_type.presentation = name
+                option_type.save!
+              end
+              # option_type.option_values.where(name: value).first_or_initialize do |option_value|
+              #   option_value.presentation = value
+              #   option_value.save!
+              # end
+              option_types << option_type
+            end
+          end
+
           if shipping_category_name
             shipping_category_id = Spree::ShippingCategory.where(name: shipping_category_name).first_or_create.id
             params[:shipping_category_id] = shipping_category_id
@@ -70,6 +87,9 @@ module Spree
 
           if product.save
             master_variant = product.master
+            option_types.each do |option_type|
+              product.option_types << option_type unless product.option_types.include?(option_type)
+            end
             response "Product (#{product.id}) and master variant (#{master_variant.id}) are added"
           else
             response "Could not save the Variant #{product.errors}", 500
