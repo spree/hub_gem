@@ -1,14 +1,15 @@
-if ENV["COVERAGE"]
-  # Run Coverage report
-  require 'simplecov'
-  SimpleCov.start do
-    add_group 'Controllers', 'app/controllers'
-    add_group 'Helpers', 'app/helpers'
-    add_group 'Mailers', 'app/mailers'
-    add_group 'Models', 'app/models'
-    add_group 'Views', 'app/views'
-    add_group 'Libraries', 'lib'
-  end
+require 'simplecov'
+SimpleCov.start do
+
+  add_group 'Models', '/app/models/'
+  add_group 'Controllers', '/app/controllers/'
+  add_group 'Serializers', '/app/serializers/'
+  add_group "Hub", '/lib/spree/hub/'
+  add_group 'Handlers', '/lib/spree/hub/handler/'
+
+  add_filter '/spec/'
+
+  project_name 'Webhooks and Push API implemention for the Spree Commerce Hub'
 end
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
