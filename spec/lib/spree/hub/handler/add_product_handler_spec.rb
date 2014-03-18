@@ -129,8 +129,10 @@ module Spree
           end
 
           context "with images" do
-            it "needs to be implemted" do
-              raise "Make me work!"
+            it "it will download the image at add the attachment" do
+              handler.process
+              product = Spree::Product.find_by_slug("other-permalink-then-name")
+              expect(product.images.count).to be 1
             end
           end
 

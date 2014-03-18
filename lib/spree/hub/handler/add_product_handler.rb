@@ -93,7 +93,7 @@ module Spree
             option_types.each do |option_type|
               product.option_types << option_type unless product.option_types.include?(option_type)
             end
-
+            # TODO make sure we make this work for variants not master
             if images
               images.each do |image_hsh|
                 image = product.images.create
