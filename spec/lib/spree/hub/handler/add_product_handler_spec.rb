@@ -103,19 +103,24 @@ module Spree
 
           context "with options" do
             context "and no option_types present in Spree" do
-              
               it "will create the option_types" do
                 expect{handler.process}.to change{Spree::OptionType.count}.by(2)
               end
+            end
 
-              # {"color"=>"GREY", "size"=>"S"}
-              # Will create the 'color' and 'size' option_types
-              it "will assign those option_types to the product" do
-                handler.process
-                product = Spree::Product.find_by_slug("other-permalink-then-name")
-                expect(product.option_types.pluck(:name)).to eql ["color", "size"]
+            context "and some option_types are present in Spree" do
+              let!(:option_type) {create(:option_type, name: "color")}
+              it "will only create the missing option_types" do
+                expect{handler.process}.to change{Spree::OptionType.count}.by(1)
               end
+            end
 
+            # {"color"=>"GREY", "size"=>"S"}
+            # Will create the 'color' and 'size' option_types
+            it "will assign those option_types to the product" do
+              handler.process
+              product = Spree::Product.find_by_slug("other-permalink-then-name")
+              expect(product.option_types.pluck(:name)).to eql ["color", "size"]
             end
           end
 
