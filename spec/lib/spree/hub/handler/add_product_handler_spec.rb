@@ -62,7 +62,7 @@ module Spree
               handler.process
 
               # [
-              #   ["Categories", "Clothes", "T-Shrits"],
+              #   ["Categories", "Clothes", "T-Shirts"],
               #   ["Brands", "Spree"],
               #   ["Brands", "Open Source"]
               # ]
@@ -73,10 +73,10 @@ module Spree
               # just "Clothes"
               expect(categories.root.children.count).to eql 1
 
-              # ["Clothes", "T-Shrits"]
+              # ["Clothes", "T-Shirts"]
               expect(categories.root.descendants.count).to eql 2
 
-              # just "T-Shrits"
+              # just "T-Shirts"
               expect(categories.root.leaves.count).to eql 1
 
               # "Spree" and "Open Source"
@@ -88,6 +88,16 @@ module Spree
               # "Spree" and "Open Source"
               expect(brands.root.leaves.count).to eql 2
 
+            end
+
+            it "will assign the taxon leaves to the product" do
+              handler.process
+              product = Spree::Product.find_by_slug("other-permalink-then-name")
+              expect(product.taxons.count).to eql 3
+              product.taxons.each do |taxon|
+                expect(taxon.leaf?).to be_true
+              end
+              expect(product.taxons.pluck(:name)).to eql ["T-Shirts", "Spree", "Open Source"]
             end
 
           end

@@ -3,10 +3,15 @@ module Spree
     module Handler
       class AddProductHandler < Base
 
+        attr_accessor :taxon_ids
 
-        def add_taxon(parent, taxon_names)
+        def initialize(message)
+          super(message)
+          @taxon_ids = []
+        end
+
+        def add_taxon(parent, taxon_names, position = 0)
           return parent if taxon_names.empty?
-          return if parent == nil
 
           taxon_name = taxon_names.shift
           # first_or_create is broken :(
@@ -14,10 +19,12 @@ module Spree
           if taxon
             parent.children << taxon
           else
-            taxon = parent.children.create(name: taxon_name)
+            taxon = parent.children.create(name: taxon_name, position: position)
           end
           parent.save
-          add_taxon(taxon, taxon_names)
+          # store the taxon so we can assign it later
+          taxon_ids << taxon.id
+          add_taxon(taxon, taxon_names, position+1)
         end
 
 
@@ -35,14 +42,14 @@ module Spree
           params[:slug] = permalink if permalink.present?
 
           # taxons are stored as breadcrumbs in an nested array.
-          # [["Categories", "Clothes", "T-Shrits"], ["Brands", "Spree"], ["Brands", "Open Source"]]
+          # [["Categories", "Clothes", "T-Shirts"], ["Brands", "Spree"], ["Brands", "Open Source"]]
           if taxons
             taxons.each do |taxons_path|
               taxonomy_name = taxons_path.shift
               taxonomy = Spree::Taxonomy.where(name: taxonomy_name).first_or_create
-              root_taxon = taxonomy.root
-              add_taxon(root_taxon, taxons_path)
+              add_taxon(taxonomy.root, taxons_path)
             end
+            params[:taxon_ids] = Spree::Taxon.where(id: @taxon_ids).leaves.pluck(:id)
           end
 
           if shipping_category_name
