@@ -196,85 +196,27 @@ module Spree
         pending "in concept"
       end
 
-
       describe "#process" do
-
         before do
           img_fixture = File.open(File.expand_path('../../../../../fixtures/thinking-cat.jpg', __FILE__))
           Handler::AddProductHandler.any_instance.stub(:open).and_return img_fixture
         end
-        context "with a master variant (ie no parent_id)" do
 
-          let!(:message) do
+        context "product without children" do
+          let(:message) do
             hsh = ::Hub::Samples::Product.request
-            hsh["product"]["parent_id"] = nil
-            hsh["product"]["permalink"] = "other-permalink-then-name"
+            hsh["product"].delete("children")
             hsh
           end
-
           let(:handler) { Handler::AddProductHandler.new(message.to_json) }
 
-          it "imports a new product in the storefront" do
+          it "imports a new Spree::Product" do
             expect{handler.process}.to change{Spree::Product.count}.by(1)
           end
 
-          it "imports a new variant master in the storefront" do
+          it "imports a new Spree::Variant (the master)" do
             expect{handler.process}.to change{Spree::Variant.count}.by(1)
           end
-
-          context "and with a permalink" do
-            before do
-              handler.process
-            end
-
-            it "will store the permalink as the slug" do
-              expect(Spree::Product.where(slug: message["product"]["permalink"]).count).to eql 1
-            end
-          end
-
-          context "with taxons" do
-            it "will assign the taxon leaves to the product" do
-              handler.process
-              product = Spree::Product.find_by_slug("other-permalink-then-name")
-              expect(product.taxons.count).to eql 3
-              product.taxons.each do |taxon|
-                expect(taxon.leaf?).to be_true
-              end
-              expect(product.taxons.pluck(:name)).to eql ["T-Shirts", "Spree", "Open Source"]
-            end
-          end
-
-          context "with images" do
-            it "it will download the image at add the attachment" do
-              handler.process
-              product = Spree::Product.find_by_slug("other-permalink-then-name")
-              expect(product.images.count).to be 1
-            end
-          end
-
-          context "response" do
-            let(:responder) { handler.process }
-
-            it "is a Hub::Responder" do
-              expect(responder.class.name).to eql "Spree::Hub::Responder"
-            end
-
-            it "returns the original request_id" do
-              expect(responder.request_id).to eql message["request_id"]
-            end
-
-            it "returns http 200" do
-              expect(responder.code).to eql 200
-            end
-
-            it "returns a summary with the created product and variant id's" do
-              product_name = message["product"]["name"]
-              product_id = message["product"]["id"]
-              expected_summary = "Product '#{product_name}' added with master id: #{product_id}"
-              expect(responder.summary).to eql expected_summary
-            end
-          end
-
         end
       end
 

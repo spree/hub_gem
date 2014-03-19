@@ -52,19 +52,18 @@ GIT
     spree_sample (2.3.0.beta)
       spree_core (= 2.3.0.beta)
 
-GIT
-  remote: git://github.com/spree/hub_samples.git
-  revision: 68885c1f7d6286463b60c1df85744d846076c7b6
-  specs:
-    hub_samples (1.0)
-      bson_ext (>= 1.7.0)
-
 PATH
   remote: .
   specs:
     spree_hub (2.3.0.beta)
       active_model_serializers (= 0.9.0.alpha1)
       spree_core
+
+PATH
+  remote: /Users/peterberkenbosch/code/github/spree/hub_samples
+  specs:
+    hub_samples (1.0)
+      bson_ext (>= 1.7.0)
 
 GEM
   specs:
