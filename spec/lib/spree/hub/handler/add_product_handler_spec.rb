@@ -9,7 +9,7 @@ module Spree
       end
 
       context "#process" do
-        context "with a master product (ie no parent_id)" do
+        context "with a master variant (ie no parent_id)" do
 
           let!(:message) do
             hsh = ::Hub::Samples::Product.request
@@ -105,6 +105,7 @@ module Spree
             end
           end
 
+          ## TODO NO NO NO a master variant does not have any options!
           context "with options" do
             context "and no option_types present in Spree" do
               it "will create the option_types" do
