@@ -9,6 +9,44 @@ module Spree
       end
 
       context "#process" do
+
+        context "product with a parent_id" do
+
+          let!(:message) do
+            hsh = ::Hub::Samples::Product.request
+            hsh["product"]["permalink"] = "other-permalink-then-name"
+            hsh
+          end
+
+          let(:handler) { Handler::AddProductHandler.new(message.to_json) }
+
+          context "and that product exists in Spree" do
+            let(:product) {create(:product, id: message["product"]["parent_id"])}
+
+            context "with options" do
+              context "and no option_types present in Spree" do
+                it "will create the option_types" do
+                  expect{handler.process}.to change{Spree::OptionType.count}.by(2)
+                end
+              end
+
+              context "and some option_types are present in Spree" do
+                let!(:option_type) {create(:option_type, name: "color")}
+                it "will only create the missing option_types" do
+                  expect{handler.process}.to change{Spree::OptionType.count}.by(1)
+                end
+              end
+
+              # {"color"=>"GREY", "size"=>"S"}
+              # Will create the 'color' and 'size' option_types
+              it "will assign those option_types to the product" do
+                handler.process
+                expect(product.option_types.pluck(:name)).to eql ["color", "size"]
+              end
+            end
+          end
+        end
+
         context "with a master variant (ie no parent_id)" do
 
           let!(:message) do
@@ -105,30 +143,6 @@ module Spree
             end
           end
 
-          ## TODO NO NO NO a master variant does not have any options!
-          context "with options" do
-            context "and no option_types present in Spree" do
-              it "will create the option_types" do
-                expect{handler.process}.to change{Spree::OptionType.count}.by(2)
-              end
-            end
-
-            context "and some option_types are present in Spree" do
-              let!(:option_type) {create(:option_type, name: "color")}
-              it "will only create the missing option_types" do
-                expect{handler.process}.to change{Spree::OptionType.count}.by(1)
-              end
-            end
-
-            # {"color"=>"GREY", "size"=>"S"}
-            # Will create the 'color' and 'size' option_types
-            it "will assign those option_types to the product" do
-              handler.process
-              product = Spree::Product.find_by_slug("other-permalink-then-name")
-              expect(product.option_types.pluck(:name)).to eql ["color", "size"]
-            end
-          end
-
           context "with images" do
             it "it will download the image at add the attachment" do
               handler.process
@@ -153,7 +167,10 @@ module Spree
             end
 
             it "returns a summary with the created product and variant id's" do
-              expect(responder.summary).to match /Product \(\d\) and master variant \(\d\) are added/
+              product_name = message["product"]["name"]
+              product_id = message["product"]["id"]
+              expected_summary = "Product '#{product_name}' added with master id: #{product_id}"
+              expect(responder.summary).to eql expected_summary
             end
           end
 
