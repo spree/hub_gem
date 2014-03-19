@@ -14,52 +14,37 @@ module Spree
 
         def process
           params = @payload[:product]
-          parent_id = params[:parent_id]
-          if parent_id
-            master_variant = Spree::Variant.where(id: parent_id).first
-            return response "parent product with id #{parent_id} not found!", 500 unless master_variant
-          else
-            params.delete(:options) # make sure to remove any options in the params here.
-            images = params.delete(:images)
-            product = add_product(params)
-            if product.save
-              process_images(product.master, images) if images
-              return response "Product '#{product.name}' added with master id: #{product.master.id}"
-            else
-              return response "could not save product due to validation errors", 500
-            end
-          end
+          children_params = params.delete(:children)
+
+          #posible master images
+          images = params.delete(:images)
+
+          product = process_root_product(params)
+
+          #process_images(product.master, images) if images && product.valid?
         end
 
-        # no parent_id, so adding new product and master variant
-        def add_product(params)
+        # the Spree::Product and Spree::Variant master
+        # it's the top level 'product'
+        def process_root_product(params)
 
           id = params.delete(:id)
           permalink = params.delete(:permalink)
           taxons = params.delete(:taxons)
           shipping_category_name = params.delete(:shipping_category)
+          options = params.delete(:options)
+          properties = params.delete(:properties)
 
-          params.delete(:parent_id)
           params[:slug] = permalink if permalink.present?
-
-          if taxons
-            process_taxons(taxons)
-            params[:taxon_ids] = Spree::Taxon.where(id: @taxon_ids).leaves.pluck(:id)
-          end
+          process_taxons(taxons)
+          params[:taxon_ids] = Spree::Taxon.where(id: @taxon_ids).leaves.pluck(:id)
 
           if shipping_category_name
             shipping_category_id = Spree::ShippingCategory.where(name: shipping_category_name).first_or_create.id
             params[:shipping_category_id] = shipping_category_id
           end
+          product = Spree::Product.create(params)
 
-          product = Spree::Product.new(params)
-          # make sure to set the master variant id to the provided id for
-          # future lookups.
-
-          product.master.update_attribute(:id, id)
-
-          # return the new product, it will be saved in the calling method
-          product
         end
 
         def process_taxons(taxons)
@@ -99,38 +84,6 @@ module Spree
             image.alt = image_hsh["title"]
             image.save!
           end
-        end
-
-        # option types is a key value hash with {option_type_name => option_type_value}
-        # {"color"=>"GREY", "size"=>"S"}
-        def process_options(variant, options)
-          product = variant.product
-          option_types = []
-          option_values = []
-
-          options.each do |name, value|
-            option_type = Spree::OptionType.where(name: name).first_or_initialize do |option_type|
-              option_type.presentation = name
-              option_type.save!
-            end
-
-            option_type.option_values.where(name: value).first_or_initialize do |option_value|
-              option_value.presentation = value
-              option_value.save!
-              option_values << option_value
-            end
-
-            option_types << option_type
-          end
-
-          option_types.each do |option_type|
-            product.option_types << option_type unless product.option_types.include?(option_type)
-          end
-          product.save
-          option_values.each do |option_value|
-            variant.option_values << option_value unless variant.option_values.include?(option_value)
-          end
-          variant.save
         end
 
       end
