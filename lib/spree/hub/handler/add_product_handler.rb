@@ -42,14 +42,8 @@ module Spree
           params.delete(:parent_id)
           params[:slug] = permalink if permalink.present?
 
-          # taxons are stored as breadcrumbs in an nested array.
-          # [["Categories", "Clothes", "T-Shirts"], ["Brands", "Spree"], ["Brands", "Open Source"]]
           if taxons
-            taxons.each do |taxons_path|
-              taxonomy_name = taxons_path.shift
-              taxonomy = Spree::Taxonomy.where(name: taxonomy_name).first_or_create
-              add_taxon(taxonomy.root, taxons_path)
-            end
+            process_taxons(taxons)
             params[:taxon_ids] = Spree::Taxon.where(id: @taxon_ids).leaves.pluck(:id)
           end
 
@@ -61,16 +55,26 @@ module Spree
           product = Spree::Product.new(params)
           # make sure to set the master variant id to the provided id for
           # future lookups.
+
           product.master.update_attribute(:id, id)
 
           # return the new product, it will be saved in the calling method
           product
         end
 
+        def process_taxons(taxons)
+          return unless taxons.present?
+          taxons.each do |taxons_path|
+            return unless taxons_path.present?
+            taxonomy_name = taxons_path.shift
+            taxonomy = Spree::Taxonomy.where(name: taxonomy_name).first_or_create
+            add_taxon(taxonomy.root, taxons_path)
+          end
+        end
+
         # recursive method to add the taxons
         def add_taxon(parent, taxon_names, position = 0)
-          return parent if taxon_names.empty?
-
+          return unless taxon_names.present?
           taxon_name = taxon_names.shift
           # first_or_create is broken :(
           taxon = Spree::Taxon.where(name: taxon_name, parent_id: parent.id).first
@@ -81,11 +85,13 @@ module Spree
           end
           parent.save
           # store the taxon so we can assign it later
-          taxon_ids << taxon.id
+          @taxon_ids << taxon.id
           add_taxon(taxon, taxon_names, position+1)
         end
 
         def process_images(variant, images)
+          return unless images.present?
+
           images.each do |image_hsh|
             image = variant.images.create
             image.attachment = open(image_hsh["url"])
@@ -120,12 +126,12 @@ module Spree
           option_types.each do |option_type|
             product.option_types << option_type unless product.option_types.include?(option_type)
           end
-
+          product.save
           option_values.each do |option_value|
             variant.option_values << option_value unless variant.option_values.include?(option_value)
           end
+          variant.save
         end
-
 
       end
     end
