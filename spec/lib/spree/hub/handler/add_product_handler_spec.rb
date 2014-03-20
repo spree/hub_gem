@@ -184,15 +184,39 @@ module Spree
         end
       end
 
-      describe ".process_options" do
-        pending "in concept"
+      describe ".process_option_types" do
+        let(:product) { create(:product) }
+
+        context "with empty options" do
+          it "will just return" do
+            expect(handler.process_option_types(product, [] )).to be nil
+          end
+          it "will not add option_types" do
+            expect{handler.process_option_types(product,[])}.to_not change{Spree::OptionType.count}
+          end
+        end
+
+        context "with the option types not yet present" do
+          it "will add the option types" do
+            expect{handler.process_option_types(product,["color", "size"])}.to change{Spree::OptionType.count}.by(2)
+          end
+        end
+
+        context "with some option types already present" do
+          let!(:option_type){create(:option_type, name: 'color')}
+          it "will only create the missing option type" do
+            expect{handler.process_option_types(product,["color", "size"])}.to change{Spree::OptionType.count}.by(1)
+          end
+        end
+
+        it "will assign the option types to the product" do
+          handler.process_option_types(product,["color", "size"])
+          expect(product.option_types.count).to eql 2
+          expect(product.option_types.collect(&:name)).to eql ["color", "size"]
+        end
       end
 
       describe ".process_properties" do
-        pending "in concept"
-      end
-
-      describe ".add_product" do
         pending "in concept"
       end
 
@@ -217,6 +241,35 @@ module Spree
           it "imports a new Spree::Variant (the master)" do
             expect{handler.process}.to change{Spree::Variant.count}.by(1)
           end
+
+          context "processed" do
+            before do
+              handler.process
+            end
+            let(:product) { Spree::Variant.find_by_sku(message["product"]["sku"]).product}
+
+            it "will set the correct permalink" do
+              expect(product.slug).to eql message["product"]["permalink"]
+            end
+
+            it "will assign the taxons" do
+              expect(product.taxons.count).to eql 3
+              product.taxons.each do |taxon|
+                expect(taxon.leaf?).to be_true
+              end
+              expect(product.taxons.pluck(:name)).to eql ["T-Shirts", "Spree", "Open Source"]
+            end
+
+            it "will assign the shipping category" do
+              expect(product.shipping_category.name).to eql message["product"]["shipping_category"]
+            end
+
+            it "will assign the images to the master variant" do
+              expect(product.images.count).to eql 1
+            end
+
+          end
+
         end
       end
 
