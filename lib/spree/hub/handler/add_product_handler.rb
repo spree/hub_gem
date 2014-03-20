@@ -14,14 +14,20 @@ module Spree
 
         def process
           params = @payload[:product]
+
           children_params = params.delete(:children)
 
           #posible master images
           images = params.delete(:images)
-
           product = process_root_product(params)
+          process_images(product.master, images)
 
-          #process_images(product.master, images) if images && product.valid?
+          if product.valid?
+            response "Product #{product.sku} added"
+          else
+            response "Cannot add the product due to validation errors", 500
+          end
+
         end
 
         # the Spree::Product and Spree::Variant master
@@ -35,16 +41,35 @@ module Spree
           options = params.delete(:options)
           properties = params.delete(:properties)
 
-          params[:slug] = permalink if permalink.present?
           process_taxons(taxons)
-          params[:taxon_ids] = Spree::Taxon.where(id: @taxon_ids).leaves.pluck(:id)
 
-          if shipping_category_name
-            shipping_category_id = Spree::ShippingCategory.where(name: shipping_category_name).first_or_create.id
-            params[:shipping_category_id] = shipping_category_id
-          end
+          params[:slug] = permalink if permalink.present?
+          params[:taxon_ids] = Spree::Taxon.where(id: @taxon_ids).leaves.pluck(:id)
+          params[:shipping_category_id] = process_shipping_category(shipping_category_name)
           product = Spree::Product.create(params)
 
+          process_option_types(product, options)
+          #process_properties(product, options)
+
+          product
+        end
+
+        # ['color', 'size']
+        def process_option_types(product, options)
+          return unless options.present?
+
+          options.each do |option_type_name|
+            option_type = Spree::OptionType.where(name: option_type_name).first_or_initialize do |option_type|
+              option_type.presentation = option_type_name
+              option_type.save!
+            end
+            product.option_types << option_type unless product.option_types.include?(option_type)
+          end
+
+        end
+
+        def process_shipping_category(shipping_category_name)
+          Spree::ShippingCategory.where(name: shipping_category_name).first_or_create.id
         end
 
         def process_taxons(taxons)
