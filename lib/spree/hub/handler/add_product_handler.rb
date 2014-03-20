@@ -22,12 +22,15 @@ module Spree
           product = process_root_product(params)
           process_images(product.master, images)
 
+          # if children_params
+          #   process_child_products(product, children_params)
+          # end
+
           if product.valid?
             response "Product #{product.sku} added"
           else
             response "Cannot add the product due to validation errors", 500
           end
-
         end
 
         # the Spree::Product and Spree::Variant master
@@ -49,7 +52,7 @@ module Spree
           product = Spree::Product.create(params)
 
           process_option_types(product, options)
-          #process_properties(product, options)
+          process_properties(product, properties)
 
           product
         end
@@ -65,7 +68,21 @@ module Spree
             end
             product.option_types << option_type unless product.option_types.include?(option_type)
           end
+        end
 
+        #{"material" => "cotton", "fit" => "smart fit"}
+        def process_properties(product, properties)
+          return unless properties.present?
+          properties.keys.each do |property_name|
+            property = Spree::Property.where(name: property_name).first_or_initialize do |property|
+              property.presentation = property_name
+              property.save!
+            end
+            Spree::ProductProperty.where(product: product, property: property).first_or_initialize do |pp|
+              pp.value = properties[property_name]
+              pp.save!
+            end
+          end
         end
 
         def process_shipping_category(shipping_category_name)

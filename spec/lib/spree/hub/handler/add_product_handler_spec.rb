@@ -217,7 +217,42 @@ module Spree
       end
 
       describe ".process_properties" do
-        pending "in concept"
+        let(:product) { create(:product) }
+        let(:properties) do
+          {
+            "material" => "cotton",
+            "fit" => "smart fit"
+          }
+        end
+
+        context "with empty properties" do
+          let(:properties) { {} }
+          it "will just return" do
+            expect(handler.process_properties(product, properties)).to be nil
+          end
+          it "will not add properties" do
+            expect{handler.process_properties(product,properties)}.to_not change{Spree::Property.count}
+          end
+        end
+
+        context "with the properties not yet present" do
+          it "will add the properties" do
+            expect{handler.process_properties(product,properties)}.to change{Spree::Property.count}.by(2)
+          end
+        end
+
+        it "will assign the properties to the product" do
+          property_names = ["material", "fit"]
+          values = ["cotton", "smart fit"]
+          handler.process_properties(product,properties)
+          expect(product.properties.count).to eql 2
+          expect(product.properties.collect(&:name)).to eql property_names
+          property_names.each_with_index do |p,i|
+            expect(product.property(p)).to eql values[i]
+          end
+
+        end
+
       end
 
       describe "#process" do
