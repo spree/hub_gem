@@ -308,10 +308,16 @@ module Spree
         context "product with children" do
           let(:message) {::Hub::Samples::Product.request}
           let(:handler) { Handler::AddProductHandler.new(message.to_json) }
+          let(:product) { Spree::Variant.find_by_sku(message["product"]["sku"]).product}
 
           it "will add variants to the product" do
             # 1 variant as the master, and 1 from the children hash
             expect{handler.process}.to change{Spree::Variant.count}.by(2)
+          end
+
+          it "will assign the correct product" do
+            handler.process
+            expect(product.variants.count).to be 1
           end
 
         end
