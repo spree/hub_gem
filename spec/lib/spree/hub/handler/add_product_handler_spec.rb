@@ -302,7 +302,16 @@ module Spree
             it "will assign the images to the master variant" do
               expect(product.images.count).to eql 1
             end
+          end
+        end
 
+        context "product with children" do
+          let(:message) {::Hub::Samples::Product.request}
+          let(:handler) { Handler::AddProductHandler.new(message.to_json) }
+
+          it "will add variants to the product" do
+            # 1 variant as the master, and 1 from the children hash
+            expect{handler.process}.to change{Spree::Variant.count}.by(2)
           end
 
         end
