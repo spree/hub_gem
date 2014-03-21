@@ -277,6 +277,13 @@ module Spree
             expect{handler.process}.to change{Spree::Variant.count}.by(1)
           end
 
+          it "returns the correct response" do
+            responder = handler.process
+            expect(responder.class.name).to eql "Spree::Hub::Responder"
+            expect(responder.request_id).to eql message["request_id"]
+            expect(responder.summary).to match "Product #{message["product"]["id"]} added"
+          end
+
           context "processed" do
             before do
               handler.process
@@ -318,6 +325,13 @@ module Spree
           it "will assign the correct product" do
             handler.process
             expect(product.variants.count).to be 1
+          end
+
+          it "returns the correct response" do
+            responder = handler.process
+            expect(responder.class.name).to eql "Spree::Hub::Responder"
+            expect(responder.request_id).to eql message["request_id"]
+            expect(responder.summary).to eql "Product #{message["product"]["id"]} added, with child skus: #{product.variants.pluck(:sku)}"
           end
 
         end
