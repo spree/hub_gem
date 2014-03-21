@@ -1,3 +1,5 @@
+source 'https://rubygems.org'
+
 gem 'spree', github: 'spree/spree', branch: "master"
 
 gem 'hub_samples', github: "spree/hub_samples", branch: "new_product", group: :test
