@@ -27,7 +27,12 @@ module Spree
           end
 
           if product.valid?
-            response "Product #{product.sku} added"
+            if product.variants.count > 0
+              response "Product #{product.sku} added, with child skus: #{product.variants.pluck(:sku)}"
+            else
+              response "Product #{product.sku} added"
+            end
+
           else
             response "Cannot add the product due to validation errors", 500
           end
