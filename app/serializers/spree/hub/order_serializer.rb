@@ -21,7 +21,7 @@ module Spree
       end
 
       def placed_on
-        object.completed? ? object.completed_at.iso8601 : nil
+        object.completed_at.try(:iso8601)
       end
 
       def totals
