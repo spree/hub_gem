@@ -78,7 +78,7 @@ module Spree
             end
           end
 
-          it "serialized the original images for the variant" do
+          it "serialized the original images for the product" do
             expect(serialized_product["images"].count).to be 3
             dimension_hash = {"height" => 490, "width" => 489}
             3.times.each_with_index do |i|
@@ -91,6 +91,19 @@ module Spree
           end
         end
 
+        context "without variants" do
+          it "returns [] for 'children'" do
+            expect(serialized_product["children"]).to eql []
+          end
+        end
+
+        context "with variants" do
+          let!(:product) {create(:product_with_option_types)}
+          let!(:variant) { create(:variant, :product => product) }
+          it "serialized the variant as child objects" do
+            expect(serialized_product["children"].count).to eql 1
+          end
+        end
       end
 
     end
