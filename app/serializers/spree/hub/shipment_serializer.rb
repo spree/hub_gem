@@ -4,11 +4,10 @@ module Spree
   module Hub
     class ShipmentSerializer < ActiveModel::Serializer
       attributes :id, :order_id, :email, :cost, :status, :stock_location,
-                :shipping_method, :tracking, :updated_at, :shipped_at,
-                :shipping_address, :items
+                :shipping_method, :tracking, :updated_at, :shipped_at
 
       has_one :address, serializer: AddressSerializer, root: "shipping_address"
-      has_many :items, serializer: LineItemSerializer, root: "items"
+      has_many :line_items, serializer: LineItemSerializer, root: "items"
 
       def id
         object.number
@@ -16,6 +15,10 @@ module Spree
 
       def order_id
         object.order.number
+      end
+
+      def email
+        ""
       end
 
       def cost
