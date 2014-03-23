@@ -6,12 +6,12 @@ module Spree
 
       attributes :id, :status, :channel, :email, :currency, :placed_on, :totals
 
-      has_many :line_items,  serializer: Spree::Hub::LineItemSerializer
-      has_many :adjustments, serializer: Spree::Hub::AdjustmentSerializer
+      has_many :line_items,  serializer: LineItemSerializer
+      has_many :adjustments, serializer: AdjustmentSerializer
       # has_many :payments
       #
-      # has_one :shipping_address
-      # has_one :billing_address
+      has_one :shipping_address, serializer: AddressSerializer
+      has_one :billing_address, serializer: AddressSerializer
 
       def id
         object.number
@@ -29,8 +29,8 @@ module Spree
         {
           item: object.item_total.to_f,
           adjustment: object.adjustment_total.to_f,
-          tax: (object.included_tax_total + object.additional_tax_total).to_f,
-          shipping: object.shipment_total.to_f,
+          tax: object.tax_total.to_f,
+          shipping: object.ship_total.to_f,
           payment: object.payments.completed.sum(:amount).to_f,
           order: object.total.to_f
         }

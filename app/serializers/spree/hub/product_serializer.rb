@@ -13,7 +13,7 @@ module Spree
       #has_many :images, serializer: ImageSerializer
 
       def parent_id
-        object.is_master? ? nil : object.product.master.id
+        object.product.master.id
       end
 
       def price
@@ -25,11 +25,11 @@ module Spree
       end
 
       def available_on
-        object.available_on.iso8601
+        object.available_on.try :iso8601
       end
 
       def permalink
-        object.slug
+        object.product.permalink
       end
 
       def shipping_category
@@ -37,7 +37,7 @@ module Spree
       end
 
       def taxons
-        object.product.taxons.collect {|t| t.root.self_and_descendants.collect(&:name)}
+        object.product.taxons.collect(&:name)
       end
 
       def options
