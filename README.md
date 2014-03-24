@@ -48,19 +48,10 @@ Spree::Hub::Config[:hub_token] = "sdfsfddfdss"
 
 ```
 
-Open up `Spree::Order` to add the push `after_commit`.
+Add the push `after_commit` to `Spree::Order`.
 
 ```ruby
-require 'active_model/serializer'
-
-Spree::Order.class_eval do
-  after_commit :push_it
-
-  def push_it
-    Spree::Hub::Client.push(ActiveModel::ArraySerializer.new(
-  [self], each_serializer: Spree::Hub::OrderSerializer, root: 'orders').to_json)
-  end
-end
+Spree::Order.after_commit -> { Spree::Hub::OrderSerializer.push_it self }
 ```
 
 Consuming webhooks from the hub
