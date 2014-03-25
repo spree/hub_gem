@@ -1,7 +1,7 @@
 GIT
   remote: git://github.com/spree/hub_samples.git
-  revision: 2b3d28d1e77bd659c662de269f798de7dcfc6619
-  branch: new_product
+  revision: 68885c1f7d6286463b60c1df85744d846076c7b6
+  branch: master
   specs:
     hub_samples (1.0)
       bson_ext (>= 1.7.0)
@@ -62,7 +62,7 @@ GIT
 PATH
   remote: .
   specs:
-    spree_hub (2.3.0.beta)
+    spree_hub_client (2.3.0.beta)
       active_model_serializers (= 0.9.0.alpha1)
       spree_core
 
@@ -316,5 +316,5 @@ DEPENDENCIES
   selenium-webdriver
   simplecov
   spree!
-  spree_hub!
+  spree_hub_client!
   sqlite3

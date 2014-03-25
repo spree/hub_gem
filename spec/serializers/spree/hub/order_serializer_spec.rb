@@ -39,13 +39,6 @@ module Spree
           end
         end
       end
-
-      context "custom attributes" do
-        it "adds the custom attributes" do
-          pending
-        end
-      end
-
     end
   end
 end

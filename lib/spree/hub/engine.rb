@@ -2,8 +2,8 @@ module Spree
   module Hub
     class Engine < Rails::Engine
       isolate_namespace Spree
-      engine_name 'spree_hub'
-      
+      engine_name 'spree_hub_client'
+
       initializer "spree.hub.environment", :before => :load_config_initializers do |app|
         Spree::Hub::Config = Spree::HubConfiguration.new
       end
@@ -21,5 +21,3 @@ module Spree
     end
   end
 end
-
-
