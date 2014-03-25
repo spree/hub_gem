@@ -1,12 +1,4 @@
 GIT
-  remote: git://github.com/spree/hub_samples.git
-  revision: 68885c1f7d6286463b60c1df85744d846076c7b6
-  branch: master
-  specs:
-    hub_samples (1.0)
-      bson_ext (>= 1.7.0)
-
-GIT
   remote: git://github.com/spree/spree.git
   revision: a1e048065c00448186790d52c89be4cc9f137d0e
   branch: master
@@ -116,9 +108,6 @@ GEM
       json (~> 1.4)
       nokogiri (>= 1.4.4)
       uuidtools (~> 2.1)
-    bson (1.9.2)
-    bson_ext (1.9.2)
-      bson (~> 1.9.2)
     builder (3.1.4)
     cancan (1.6.10)
     canonical-rails (0.0.7)
@@ -308,7 +297,6 @@ DEPENDENCIES
   database_cleaner
   factory_girl (~> 4.4)
   ffaker
-  hub_samples!
   pry
   pry-debugger
   rspec-rails (~> 2.13)

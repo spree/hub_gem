@@ -1,7 +1,7 @@
 spree_hub_client
 ================
 
-Serializers and Client to push your Spree Storefront object to the hub.
+Serializers and Push API Client to push your Spree Storefront object to the hub.
 
 
 Installation

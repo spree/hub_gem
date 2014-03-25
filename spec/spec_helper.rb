@@ -1,16 +1,5 @@
 require 'simplecov'
-SimpleCov.start do
-
-  add_group 'Models', '/app/models/'
-  add_group 'Controllers', '/app/controllers/'
-  add_group 'Serializers', '/app/serializers/'
-  add_group "Hub", '/lib/spree/hub/'
-  add_group 'Handlers', '/lib/spree/hub/handler/'
-
-  add_filter '/spec/'
-
-  project_name 'Webhooks and Push API implemention for the Spree Commerce Hub'
-end
+SimpleCov.start
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV["RAILS_ENV"] ||= 'test'
@@ -26,7 +15,6 @@ require 'rspec/rails'
 require 'rspec/autorun'
 require 'database_cleaner'
 require 'ffaker'
-require 'hub/samples'
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
