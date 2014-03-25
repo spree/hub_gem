@@ -18,7 +18,7 @@ module Spree
       end
 
       def email
-        ""
+        object.order.email
       end
 
       def cost
