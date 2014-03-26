@@ -1,12 +1,4 @@
 GIT
-  remote: git://github.com/spree/hub_samples.git
-  revision: 2b3d28d1e77bd659c662de269f798de7dcfc6619
-  branch: new_product
-  specs:
-    hub_samples (1.0)
-      bson_ext (>= 1.7.0)
-
-GIT
   remote: git://github.com/spree/spree.git
   revision: a1e048065c00448186790d52c89be4cc9f137d0e
   branch: master
@@ -62,7 +54,7 @@ GIT
 PATH
   remote: .
   specs:
-    spree_hub (2.3.0.beta)
+    spree_hub_client (2.3.0.beta)
       active_model_serializers (= 0.9.0.alpha1)
       spree_core
 
@@ -116,9 +108,6 @@ GEM
       json (~> 1.4)
       nokogiri (>= 1.4.4)
       uuidtools (~> 2.1)
-    bson (1.9.2)
-    bson_ext (1.9.2)
-      bson (~> 1.9.2)
     builder (3.1.4)
     cancan (1.6.10)
     canonical-rails (0.0.7)
@@ -308,7 +297,6 @@ DEPENDENCIES
   database_cleaner
   factory_girl (~> 4.4)
   ffaker
-  hub_samples!
   pry
   pry-debugger
   rspec-rails (~> 2.13)
@@ -316,5 +304,5 @@ DEPENDENCIES
   selenium-webdriver
   simplecov
   spree!
-  spree_hub!
+  spree_hub_client!
   sqlite3

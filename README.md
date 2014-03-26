@@ -1,21 +1,22 @@
-spree_hub
-========
+spree_hub_client
+================
+
+Serializers and Push API Client to push your Spree Storefront object to the hub.
 
 
 Installation
 ------------
 
-Add spree_hub to your Gemfile:
+Add spree_hub_client to your Gemfile:
 
 ```ruby
-gem 'spree_hub', github: 'spree/hub_gem'
+gem 'spree_hub_client', github: 'spree/hub_gem'
 ```
 
-Bundle your dependencies and run the installation generator:
+Bundle your dependencies:
 
 ```shell
 bundle
-bundle exec rails g spree_hub:install
 ```
 
 Testing
@@ -26,13 +27,6 @@ First bundle your dependencies, then run `rake`. `rake` will default to building
 ```shell
 bundle
 bundle exec rake
-```
-
-When testing your applications integration with this extension you may use it's factories.
-Simply add this require statement to your spec_helper:
-
-```ruby
-require 'spree_hub/factories'
 ```
 
 Sample Order Decorator
