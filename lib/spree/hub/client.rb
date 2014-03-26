@@ -24,7 +24,7 @@ module Spree
           uri,
           {
             body: json_payload,
-            headers: {,
+            headers: {
              'Content-Type'       => 'application/json',
              'X-Hub-Store'        => store_id,
              'X-Hub-Access-Token' => access_token,
