@@ -13,8 +13,8 @@ module Spree
 
       protected
       def authorize
-        unless request.headers["HTTP_X_HUB-STORE"] == Spree::Hub::Config[:hub_store_id] && request.headers["HTTP_X_HUB-TOKEN"] == Spree::Hub::Config[:hub_token]
-          render status: 401, json: {text: 'unauthorized'}
+        unless request.headers['HTTP_X_HUB_STORE'] == Spree::Hub::Config[:hub_store_id] && request.headers['HTTP_X_HUB_TOKEN'] == Spree::Hub::Config[:hub_token]
+          render status: 401, json: { text: 'unauthorized' }
           return false
         end
       end
