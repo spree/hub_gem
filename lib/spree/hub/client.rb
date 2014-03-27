@@ -26,6 +26,7 @@ module Spree
           {
             body: json_payload,
             headers: {
+             'Content-Type'       => 'application/json',
              'X-Hub-Store'        => store_id,
              'X-Hub-Access-Token' => access_token,
              'X-Hub-Timestamp'    => timestamp.to_s

@@ -35,18 +35,32 @@ Simply add this require statement to your spec_helper:
 require 'spree_hub/factories'
 ```
 
-Sample Order Push
------------------
+Sample Order Decorator
+----------------------
 
 Note: this will be abstracted soon in `Spree::Hub::Client`
 
-```ruby
+Add the hub credentials to `config/initializers/spree.rb`:
 
+```ruby
 Spree::Hub::Config[:hub_store_id] = "34werwerwer"
 Spree::Hub::Config[:hub_token] = "sdfsfddfdss"
 
+```
+
+Open up `Spree::Order` to add the push `after_commit`.
+
+```ruby
 require 'active_model/serializer'
-Spree::Hub::Client.push(ActiveModel::ArraySerializer.new(Spree::Order.complete, each_serializer: Spree::Hub::OrderSerializer, root: 'orders').to_json)
+
+Spree::Order.class_eval do
+  after_commit :push_it
+
+  def push_it
+    Spree::Hub::Client.push(ActiveModel::ArraySerializer.new(
+  [self], each_serializer: Spree::Hub::OrderSerializer, root: 'orders').to_json)
+  end
+end
 ```
 
 Copyright (c) 2014 Spree Commerce, Inc. and other contributors, released under the New BSD License

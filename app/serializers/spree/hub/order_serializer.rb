@@ -6,13 +6,14 @@ module Spree
 
       attributes :id, :status, :channel, :email, :currency, :placed_on, :totals
 
-      has_many :line_items,  serializer: LineItemSerializer
-      has_many :adjustments, serializer: AdjustmentSerializer
+      has_many :line_items,  serializer: Spree::Hub::LineItemSerializer
+      has_many :adjustments, serializer: Spree::Hub::AdjustmentSerializer
+      has_many :payments, serializer: Spree::Hub::PaymentSerializer
+
+      has_one :shipping_address, serializer: Spree::Hub::AddressSerializer
+      has_one :billing_address, serializer: Spree::Hub::AddressSerializer
+
       has_many :shipments, serializer: ShipmentSerializer
-      # has_many :payments
-      #
-      has_one :shipping_address, serializer: AddressSerializer
-      has_one :billing_address, serializer: AddressSerializer
 
       def id
         object.number
@@ -23,7 +24,7 @@ module Spree
       end
 
       def placed_on
-        object.completed? ? object.completed_at.iso8601 : nil
+        object.completed_at.try(:iso8601)
       end
 
       def totals

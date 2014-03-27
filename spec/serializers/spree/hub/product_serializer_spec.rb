@@ -4,8 +4,8 @@ module Spree
   module Hub
     describe ProductSerializer do
 
-      let(:variant) { create(:variant) }
-      let(:serialized_product) { JSON.parse( ProductSerializer.new(variant, root: false).to_json) }
+      let(:product) { create(:product) }
+      let(:serialized_product) { JSON.parse( ProductSerializer.new(product, root: false).to_json) }
 
       context "format" do
 
@@ -22,11 +22,11 @@ module Spree
         end
 
         it "serializes the slug as permalink" do
-          expect(serialized_product["permalink"]).to eql variant.slug
+          expect(serialized_product["permalink"]).to eql product.slug
         end
 
         it "serializes the shipping category name as shipping_category" do
-          expect(serialized_product["shipping_category"]).to eql variant.shipping_category.name
+          expect(serialized_product["shipping_category"]).to eql product.shipping_category.name
         end
 
         context "without taxons" do
@@ -38,7 +38,6 @@ module Spree
         context "taxons" do
           let(:taxon)    { create(:taxon, name: 't-shirts', :parent => create(:taxon, name: 'Categories')) }
           let(:taxon2)   { create(:taxon, name: 'modern') }
-          let(:product)  { variant.product }
 
           before do
             product.stub :taxons => [taxon, taxon2]
@@ -51,36 +50,60 @@ module Spree
         end
 
         context "without options" do
-
-          let(:variant) { create(:product).master }
-
-          it "returns {} for 'options'" do
-            expect(serialized_product["options"].class).to eql Hash
-            expect(serialized_product["options"]).to be_empty
+          it "returns [] for 'options'" do
+            expect(serialized_product["options"]).to eql []
           end
-
         end
 
         context "options" do
-          it "returns a hash with 'option_type => value'" do
-            options_hash = {"Size" => "S"}
-            expect(serialized_product["options"]).to eql options_hash
+          let(:product) {create(:product_with_option_types)}
+          it "returns an array with the option_types" do
+            expect(serialized_product["options"]).to eql ["foo-size"]
           end
         end
 
-        context "for 'variant'" do
-          it "serializes the 'master' id as parent_id" do
-            expect(serialized_product["parent_id"]).to eql variant.product.master.id
+        context "without images" do
+          it "returns [] for 'images'" do
+            expect(serialized_product["images"]).to eql []
           end
         end
 
-        context "for master product" do
-          let(:variant) { create(:master_variant) }
-          it "serializes the parent_id as nil" do
-            expect(serialized_product["parent_id"]).to eql nil
+        context "images" do
+
+          before do
+            ActionController::Base.asset_host = "http://myapp.dev"
+            image = File.open(File.expand_path('../../../../fixtures/thinking-cat.jpg', __FILE__))
+            3.times.each_with_index do |i|
+              product.images.create!(attachment: image, position: i, alt: "variant image #{i}")
+            end
+          end
+
+          it "serialized the original images for the product" do
+            expect(serialized_product["images"].count).to be 3
+            dimension_hash = {"height" => 490, "width" => 489}
+            3.times.each_with_index do |i|
+              expect(serialized_product["images"][i]["url"]).to match /http:\/\/myapp.dev\/spree\/products\/\d{1}\/original\/thinking-cat.jpg\?\d*/
+              expect(serialized_product["images"][i]["position"]).to eql i
+              expect(serialized_product["images"][i]["title"]).to eql "variant image #{i}"
+              expect(serialized_product["images"][i]["type"]).to eql "original"
+              expect(serialized_product["images"][i]["dimensions"]).to eql dimension_hash
+            end
           end
         end
 
+        context "without variants" do
+          it "returns [] for 'children'" do
+            expect(serialized_product["children"]).to eql []
+          end
+        end
+
+        context "with variants" do
+          let!(:product) {create(:product_with_option_types)}
+          let!(:variant) { create(:variant, :product => product) }
+          it "serialized the variant as child objects" do
+            expect(serialized_product["children"].count).to eql 1
+          end
+        end
       end
 
     end

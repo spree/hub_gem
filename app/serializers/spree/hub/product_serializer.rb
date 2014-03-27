@@ -2,18 +2,17 @@ require 'active_model/serializer'
 
 module Spree
   module Hub
-    # Accepts a Spree::Variant and serializes this to the Hub Product format
     class ProductSerializer < ActiveModel::Serializer
 
-      attributes :id, :parent_id, :name, :sku, :description, :price, :cost_price,
+      attributes :id, :name, :sku, :description, :price, :cost_price,
                  :available_on, :permalink, :meta_description, :meta_keywords,
-                 :shipping_category, :taxons, :options, :images
+                 :shipping_category, :taxons, :options
 
+      has_many :images, serializer: Spree::Hub::ImageSerializer
+      has_many :variants, serializer: Spree::Hub::VariantSerializer, root: "children"
 
-      #has_many :images, serializer: ImageSerializer
-
-      def parent_id
-        object.product.master.id
+      def id
+        object.sku
       end
 
       def price
@@ -37,14 +36,11 @@ module Spree
       end
 
       def taxons
-        object.product.taxons.collect(&:name)
+        object.taxons.collect {|t| t.root.self_and_descendants.collect(&:name)}
       end
 
       def options
-        object.option_values.each_with_object({}) {|ov,h| h[ov.option_type.presentation]= ov.presentation}
-      end
-
-      def images
+        object.option_types.pluck(:name)
       end
 
     end

@@ -3,7 +3,7 @@ require 'active_model/serializer'
 module Spree
   module Hub
     # Accepts a Spree::StockItem and serializes this to the Hub Inventory format
-    class InventorySerializer < ActiveModel::Serializer
+    class StockItemSerializer < ActiveModel::Serializer
 
       attributes :id, :location, :product_id, :quantity
 
