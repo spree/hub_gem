@@ -8,6 +8,7 @@ module Spree
 
       has_many :line_items,  serializer: LineItemSerializer
       has_many :adjustments, serializer: AdjustmentSerializer
+      has_many :shipments, serializer: ShipmentSerializer
       # has_many :payments
       #
       has_one :shipping_address, serializer: AddressSerializer
