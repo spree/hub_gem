@@ -2,10 +2,7 @@ require 'spec_helper'
 
 module Spree
   module Hub
-
-    class Handler::AddOrderHandler < Spree::Hub::Handler::Base
-    end
-
+    
     describe Handler::Base do
 
       context "#initialize" do

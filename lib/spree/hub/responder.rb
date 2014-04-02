@@ -4,7 +4,7 @@ module Spree
   module Hub
     class Responder
       include ActiveModel::SerializerSupport
-      attr_accessor :request_id, :summary, :code
+      attr_accessor :request_id, :summary, :code, :backtrace
 
       def initialize(request_id, summary, code=200)
         self.request_id = request_id

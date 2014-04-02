@@ -2,6 +2,11 @@ require 'spec_helper'
 
 module Spree
   describe Hub::WebhookController do
+
+    let!(:message) {
+      ::Hub::Samples::Order.request
+    }
+
     context '#consume' do
       context 'with unauthorized request' do
         it 'returns 401 status' do
@@ -17,38 +22,22 @@ module Spree
         end
 
         context 'and an existing handler for the webhook' do
-
-          let!(:country) { create(:country) }
-          let!(:state) { country.states.first || create(:state, :country => country) }
-
-          let!(:user) do
-            user = Spree.user_class.new(:email => 'spree@example.com')
-            user.generate_spree_api_key!
-            user
-          end
-
-          let!(:variant) { create(:variant, :id => 73) }
-          let!(:payment_method) { create(:credit_card_payment_method) }
-
-          let!(:message) {
-            ::Hub::Samples::Order.request.to_json
-          }
-
-          let(:body) {
-            {
-              path: 'add_order',
-              webhook: message
-            }
-          }
-
-          # TODO make proper integration specs from this.
-          #  and use maybe stubs here or remove totally.
           it 'will process the webhook handler' do
-            pending 'body is not properly read!'
-            spree_xhr_post 'consume', body
+            post 'consume', ::Hub::Samples::Order.request.to_json, {use_route: :spree, format: :json, path: 'add_order'}
             expect(response).to be_success
           end
         end
+
+        context 'when an exception happens' do
+          it 'will return resonse with the exception message and backtrace' do
+            post 'consume', ::Hub::Samples::Order.request.to_json, {use_route: :spree, format: :json, path: 'update_order'}
+            expect(response.code).to eql "500"
+            json = JSON.parse(response.body)
+            expect(json["summary"]).to eql "uninitialized constant Spree::Hub::Handler::UpdateOrderHandler"
+            expect(json["backtrace"]).to be_present
+          end
+        end
+
       end
     end
   end
