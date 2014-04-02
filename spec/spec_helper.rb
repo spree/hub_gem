@@ -52,3 +52,11 @@ RSpec.configure do |config|
     Spree::Hub::Config[:hub_token] = "abc1233"
   end
 end
+
+
+
+class Spree::Hub::Handler::AddOrderHandler < Spree::Hub::Handler::Base
+  def process
+    response "Order added!"
+  end
+end
