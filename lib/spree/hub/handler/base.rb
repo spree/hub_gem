@@ -30,6 +30,10 @@ module Spree
           Spree::Hub::Responder.new(@request_id, message, code)
         end
 
+        def process
+          raise "Please implement the process method in your handler"
+        end
+
       end
     end
   end
