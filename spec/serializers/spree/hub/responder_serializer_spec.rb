@@ -17,6 +17,12 @@ module Spree
         expect(ResponderSerializer.new(responder, root: false).to_json).to eql json_response
       end
 
+      it "serializes objects when present" do
+        json_response = "{\"request_id\":\"12355\",\"summary\":\"Order abc124 was added\",\"objects\":{\"products\":{\"id\":\"abc\",\"name\":\"Epic awesome tiger pyjamas\"}}}"
+        responder.objects = { products: {id: "abc", name: "Epic awesome tiger pyjamas"} }
+        expect(ResponderSerializer.new(responder, root: false).to_json).to eql json_response
+      end
+
     end
   end
 end
