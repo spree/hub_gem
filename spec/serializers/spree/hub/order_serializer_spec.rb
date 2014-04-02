@@ -40,12 +40,6 @@ module Spree
         end
       end
 
-      context "custom attributes" do
-        it "adds the custom attributes" do
-          pending
-        end
-      end
-
       it "serializes Order object and push it to the hub" do
         expect(HTTParty).to receive(:post)
         described_class.push_it order
