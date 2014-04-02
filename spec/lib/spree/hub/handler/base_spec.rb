@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module Spree
   module Hub
-    
+
     describe Handler::Base do
 
       context "#initialize" do
@@ -36,10 +36,13 @@ module Spree
           it "will return the webhook handler" do
             expect(Handler::Base.build_handler("add_order", ::Hub::Samples::Order.request.to_json).class.name).to eql "Spree::Hub::Handler::AddOrderHandler"
           end
-
         end
-
       end
+
+      context "return optional objects" do
+        
+      end
+
     end
   end
 end
