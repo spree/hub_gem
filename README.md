@@ -77,6 +77,8 @@ So with the `add_product` sample, we will initialize `Spree::Hub::Handler::AddPr
 
 Make sure you inherit your handler from `Spree::Hub::Handler::Base`
 
+For some sample handlers (add_product and add_order) see [this gists](https://gist.github.com/peterberkenbosch/9930735)
+
 Todo: extend the docs here!
 
 Copyright (c) 2014 Spree Commerce, Inc. and other contributors, released under the New BSD License
