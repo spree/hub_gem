@@ -38,11 +38,6 @@ module Spree
           end
         end
       end
-
-      context "return optional objects" do
-        
-      end
-
     end
   end
 end
