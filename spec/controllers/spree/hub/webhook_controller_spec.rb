@@ -10,8 +10,11 @@ module Spree
     context '#consume' do
       context 'with unauthorized request' do
         it 'returns 401 status' do
-          spree_xhr_post 'consume', {}
+          post 'consume', ::Hub::Samples::Order.request.to_json, {use_route: :spree, format: :json, path: 'add_order'}
           expect(response.code).to eql "401"
+          response_json = ::JSON.parse(response.body)
+          expect(response_json["request_id"]).to_not be_nil
+          expect(response_json["summary"]).to eql "Unauthorized!"
         end
       end
 

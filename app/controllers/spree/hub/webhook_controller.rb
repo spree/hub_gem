@@ -1,7 +1,7 @@
 module Spree
   module Hub
     class WebhookController < ActionController::Base
-      before_filter :authorize, :save_request_data
+      before_filter :save_request_data, :authorize
       rescue_from Exception, :with => :exception_handler
 
       def consume
@@ -13,7 +13,9 @@ module Spree
       protected
       def authorize
         unless request.headers['HTTP_X_HUB_STORE'] == Spree::Hub::Config[:hub_store_id] && request.headers['HTTP_X_HUB_TOKEN'] == Spree::Hub::Config[:hub_token]
-          render status: 401, json: { text: 'unauthorized' }
+          base_handler = Handler::Base.new(@webhook_body)
+          responder = base_handler.response('Unauthorized!', 401)
+          render json: responder, root: false, status: responder.code
           return false
         end
       end
@@ -30,7 +32,7 @@ module Spree
         @called_hook = params[:path]
         @webhook_body = request.body.read
       end
-
+      
     end
   end
 end
