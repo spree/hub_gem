@@ -8,14 +8,13 @@ Installation
 Add spree_hub to your Gemfile:
 
 ```ruby
-gem 'spree_hub', github: 'spree/hub_gem'
+gem 'spree_hub', github: 'spree/hub_gem', branch: '1-3-stable'
 ```
 
-Bundle your dependencies and run the installation generator:
+Bundle your dependencies:
 
 ```shell
 bundle
-bundle exec rails g spree_hub:install
 ```
 
 Testing
@@ -57,12 +56,14 @@ Spree::Order.after_commit -> { Spree::Hub::OrderSerializer.push_it self }
 Consuming webhooks from the hub
 -------------------------------
 
+This is currently not supported in 1-3-stable, the Route was broken so it was disabled. 
+
 This extension provides your store with a generic endpoint to receive any webhook called
 from the hub. The format for all of those is: `http://mystore.com/hub/<WEBHOOK>`
 
 So for the add_product webhook, the endpoint url is `http://mystore.com/hub/add_product`
 
-You need to implement the webhook handler yourself, since no store is a like.
+You need to implement the webhook handler yourself, since no store is alike.
 The convention with this extension is that we dynamicly initialize a handler based on the webhook.
 So with the `add_product` sample, we will initialize `Spree::Hub::Handler::AddProductHandler` and call `process`
 
