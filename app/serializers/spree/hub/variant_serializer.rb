@@ -6,7 +6,7 @@ module Spree
 
       attributes :id, :parent_id, :name, :sku, :description, :price, :cost_price,
                   :available_on, :permalink, :meta_description, :meta_keywords,
-                  :shipping_category, :taxons, :options, :images
+                  :taxons, :options, :images
 
       has_many :images, serializer: Spree::Hub::ImageSerializer
 
@@ -27,7 +27,7 @@ module Spree
       end
 
       def permalink
-        object.slug
+        object.permalink
       end
 
       def shipping_category
