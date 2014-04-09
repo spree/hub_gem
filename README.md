@@ -56,7 +56,6 @@ Spree::Order.after_commit -> { Spree::Hub::OrderSerializer.push_it self }
 Consuming webhooks from the hub
 -------------------------------
 
-This is currently not supported in 1-3-stable, the Route was broken so it was disabled. 
 
 This extension provides your store with a generic endpoint to receive any webhook called
 from the hub. The format for all of those is: `http://mystore.com/hub/<WEBHOOK>`
