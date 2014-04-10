@@ -25,18 +25,25 @@ module Spree
         end
 
         context 'and an existing handler for the webhook' do
+
+          class Spree::Hub::Handler::FreeOrderHandler < Spree::Hub::Handler::Base
+            def process
+              response "Order added for free"
+            end
+          end
+
           it 'will process the webhook handler' do
-            post 'consume', ::Hub::Samples::Order.request.to_json, {use_route: :spree, format: :json, path: 'add_order'}
+            post 'consume', ::Hub::Samples::Order.request.to_json, {use_route: :spree, format: :json, path: 'free_order'}
             expect(response).to be_success
           end
         end
 
         context 'when an exception happens' do
           it 'will return resonse with the exception message and backtrace' do
-            post 'consume', ::Hub::Samples::Order.request.to_json, {use_route: :spree, format: :json, path: 'update_order'}
+            post 'consume', ::Hub::Samples::Order.request.to_json, {use_route: :spree, format: :json, path: 'foobar_order'}
             expect(response.code).to eql "500"
             json = JSON.parse(response.body)
-            expect(json["summary"]).to eql "uninitialized constant Spree::Hub::Handler::UpdateOrderHandler"
+            expect(json["summary"]).to eql "uninitialized constant Spree::Hub::Handler::FoobarOrderHandler"
             expect(json["backtrace"]).to be_present
           end
         end
