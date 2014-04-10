@@ -4,7 +4,7 @@ module Spree
   module Hub
     class VariantSerializer < ActiveModel::Serializer
 
-      attributes :sku, :price, :cost_price, :options
+      attributes :sku, :price, :cost_price, :options, :product_id
       has_many :images, serializer: Spree::Hub::ImageSerializer
 
       def price
