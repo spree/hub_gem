@@ -62,13 +62,11 @@ RSpec.configure do |config|
   end
 
   config.before do
+    HTTParty.stub :post
     Spree::Hub::Config[:hub_store_id] = "234254as3423r3243"
     Spree::Hub::Config[:hub_token] = "abc1233"
   end
-
 end
-
-
 
 class Spree::Hub::Handler::AddOrderHandler < Spree::Hub::Handler::Base
   def process
