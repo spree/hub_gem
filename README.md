@@ -11,11 +11,10 @@ Add spree_hub to your Gemfile:
 gem 'spree_hub', github: 'spree/hub_gem'
 ```
 
-Bundle your dependencies and run the installation generator:
+Bundle your dependencies:
 
 ```shell
 bundle
-bundle exec rails g spree_hub:install
 ```
 
 Testing
