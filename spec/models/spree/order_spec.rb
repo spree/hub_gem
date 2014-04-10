@@ -4,6 +4,7 @@ module Spree
   describe Order do
 
     let!(:order) { create(:order) }
+
     before do
       Spree::Hub::Config[:enable_hub] = true
     end

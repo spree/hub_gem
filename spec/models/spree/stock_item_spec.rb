@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 module Spree
-  describe Order do
+  describe StockItem do
 
     let!(:variant) { create(:variant) }
     let!(:stock_item) { variant.stock_items.first }
