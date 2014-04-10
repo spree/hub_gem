@@ -64,7 +64,6 @@ RSpec.configure do |config|
   config.before do
     Spree::Hub::Config[:hub_store_id] = "234254as3423r3243"
     Spree::Hub::Config[:hub_token] = "abc1233"
-    Spree::Hub::Config[:enable_hub] = true
   end
 
 end
