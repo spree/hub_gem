@@ -8,7 +8,7 @@ module Spree
         webhook_body = request.body.read
         handler = Handler::Base.build_handler(called_hook, webhook_body)
         responder = handler.process
-        render json: responder, root: false, code: responder.code
+        render json: responder, root: false, status: responder.code
       end
 
       protected
