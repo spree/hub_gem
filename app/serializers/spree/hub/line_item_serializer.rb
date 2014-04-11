@@ -5,6 +5,8 @@ module Spree
     class LineItemSerializer < ActiveModel::Serializer
       attributes :product_id, :name, :quantity, :price
 
+      has_one :variant, serializer: Spree::Hub::VariantSerializer
+
       def product_id
         object.variant.sku
       end
