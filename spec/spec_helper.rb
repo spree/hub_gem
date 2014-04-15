@@ -46,9 +46,30 @@ RSpec.configure do |config|
 
   config.fail_fast = ENV['FAIL_FAST'] || false
 
-  config.use_transactional_fixtures = true
+  config.use_transactional_fixtures = false
+
+  config.before(:suite) do
+    DatabaseCleaner.strategy = :deletion
+    DatabaseCleaner.clean_with(:truncation)
+  end
+
+  config.before(:each) do
+    DatabaseCleaner.start
+  end
+
+  config.after(:each) do
+    DatabaseCleaner.clean
+  end
+
   config.before do
+    HTTParty.stub :post
     Spree::Hub::Config[:hub_store_id] = "234254as3423r3243"
     Spree::Hub::Config[:hub_token] = "abc1233"
+  end
+end
+
+class Spree::Hub::Handler::AddOrderHandler < Spree::Hub::Handler::Base
+  def process
+    response "Order added!"
   end
 end

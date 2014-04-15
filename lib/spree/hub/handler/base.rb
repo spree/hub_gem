@@ -8,7 +8,6 @@ module Spree
         attr_accessor :payload, :parameters, :request_id
 
         def initialize(message)
-
           self.payload = ::JSON.parse(message).with_indifferent_access
           self.request_id = payload.delete(:request_id)
 
@@ -28,6 +27,10 @@ module Spree
 
         def response(message, code = 200)
           Spree::Hub::Responder.new(@request_id, message, code)
+        end
+
+        def process
+          raise "Please implement the process method in your handler"
         end
 
       end

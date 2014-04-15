@@ -9,6 +9,13 @@ module Spree
       has_one :address, serializer: AddressSerializer, root: "shipping_address"
       has_many :line_items, serializer: LineItemSerializer, root: "items"
 
+      class << self
+        def push_it(shipment)
+          payload = ActiveModel::ArraySerializer.new([shipment], each_serializer: ShipmentSerializer, root: 'shipments').to_json
+          Client.push(payload)
+        end
+      end
+
       def id
         object.number
       end

@@ -4,7 +4,7 @@ module Spree
   module Hub
     describe OrderSerializer do
 
-      let(:order) {create(:shipped_order)}
+      let!(:order) {create(:shipped_order)}
       let(:serialized_order) { OrderSerializer.new(order, root: false).to_json }
 
       context "format" do
@@ -40,12 +40,18 @@ module Spree
         end
       end
 
-      context "custom attributes" do
-        it "adds the custom attributes" do
-          pending
-        end
-      end
+      context "with hub enabled" do
 
+        before do
+          Spree::Hub::Config[:enable_hub] = true
+        end
+
+        it "serializes Order object and push it to the hub" do
+          expect(HTTParty).to receive(:post)
+          described_class.push_it order
+        end
+
+      end
     end
   end
 end
