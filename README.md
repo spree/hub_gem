@@ -11,11 +11,10 @@ Add spree_hub to your Gemfile:
 gem 'spree_hub', github: 'spree/hub_gem'
 ```
 
-Bundle your dependencies and run the installation generator:
+Bundle your dependencies:
 
 ```shell
 bundle
-bundle exec rails g spree_hub:install
 ```
 
 Testing
@@ -48,19 +47,28 @@ Spree::Hub::Config[:hub_token] = "sdfsfddfdss"
 
 ```
 
-Open up `Spree::Order` to add the push `after_commit`.
+Add the push `after_commit` to `Spree::Order`.
 
 ```ruby
-require 'active_model/serializer'
-
-Spree::Order.class_eval do
-  after_commit :push_it
-
-  def push_it
-    Spree::Hub::Client.push(ActiveModel::ArraySerializer.new(
-  [self], each_serializer: Spree::Hub::OrderSerializer, root: 'orders').to_json)
-  end
-end
+Spree::Order.after_commit -> { Spree::Hub::OrderSerializer.push_it self }
 ```
+
+Consuming webhooks from the hub
+-------------------------------
+
+This extension provides your store with a generic endpoint to receive any webhook called
+from the hub. The format for all of those is: `http://mystore.com/hub/<WEBHOOK>`
+
+So for the add_product webhook, the endpoint url is `http://mystore.com/hub/add_product`
+
+You need to implement the webhook handler yourself, since no store is a like.
+The convention with this extension is that we dynamicly initialize a handler based on the webhook.
+So with the `add_product` sample, we will initialize `Spree::Hub::Handler::AddProductHandler` and call `process`
+
+Make sure you inherit your handler from `Spree::Hub::Handler::Base`
+
+For some sample handlers (add_product and add_order) see [this gists](https://gist.github.com/peterberkenbosch/9930735)
+
+Todo: extend the docs here!
 
 Copyright (c) 2014 Spree Commerce, Inc. and other contributors, released under the New BSD License
