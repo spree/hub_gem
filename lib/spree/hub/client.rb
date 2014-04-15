@@ -22,6 +22,7 @@ module Spree
           access_token = OpenSSL::HMAC.hexdigest(sha1, access_token, data)
         end
 
+        resp = 
         HTTParty.post(
           uri,
           {
@@ -34,6 +35,9 @@ module Spree
             }
           }
         )
+
+        raise "improper response #{resp}" if resp.size != 1
+        resp
       end
     end
   end

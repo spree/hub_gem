@@ -3,12 +3,14 @@ require 'active_model/serializer'
 module Spree
   module Hub
     class VariantSerializer < ActiveModel::Serializer
-
       attributes :id, :parent_id, :name, :sku, :description, :price, :cost_price,
                   :available_on, :permalink, :meta_description, :meta_keywords,
                   :shipping_category, :taxons, :options, :images
 
+      attributes :product
+
       has_many :images, serializer: Spree::Hub::ImageSerializer
+
 
       class << self
         def push_it(product)
@@ -47,6 +49,19 @@ module Spree
 
       def options
         object.option_values.each_with_object({}) {|ov,h| h[ov.option_type.presentation]= ov.presentation}
+      end
+
+      def name
+        object.product.name
+      end
+
+      def product
+        hash = {}
+        hash[:created_at] = object.product.created_at.getutc.iso8601
+        hash[:updated_at] = object.product.updated_at.getutc.iso8601
+
+        hash[:taxons] = object.product.taxons.map{|t| t.slice(:id, :name, :taxonomy_id)}
+        hash
       end
 
     end
