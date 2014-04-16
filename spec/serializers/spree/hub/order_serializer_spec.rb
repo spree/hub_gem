@@ -47,11 +47,20 @@ module Spree
           Spree::Hub::Config[:enable_auto_push] = true
         end
 
-        it "serializes Order object and push it to the hub" do
-          expect(HTTParty).to receive(:post)
-          described_class.push_it order
+        context "when status is 'complete'" do
+          it "serializes Order object and pushes it to the hub with root orders" do
+            expect(HTTParty).to receive(:post)
+            described_class.push_it order
+          end
         end
 
+        context "when status is not 'complete'" do
+          it "serializes Order object and pushes it to the hub with root carts" do
+            order = create(:order)
+            expect(HTTParty).to receive(:post)
+            described_class.push_it order
+          end
+        end
       end
     end
   end
