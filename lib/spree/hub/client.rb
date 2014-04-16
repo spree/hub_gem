@@ -8,7 +8,7 @@ module Spree
 
       def self.push(json_payload)
 
-        return unless Spree::Hub::Config[:enable_hub]
+        return unless Spree::Hub::Config[:enable_push]
 
         uri = Spree::Hub::Config[:hub_push_uri]
         store_id = Spree::Hub::Config[:hub_store_id]
