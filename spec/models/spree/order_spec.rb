@@ -6,7 +6,8 @@ module Spree
     let!(:order) { create(:order) }
 
     before do
-      Spree::Hub::Config[:enable_hub] = true
+      Spree::Hub::Config[:enable_push] = true
+      Spree::Hub::Config[:enable_auto_push] = true
     end
 
     it "pushes serialized JSON after saved" do

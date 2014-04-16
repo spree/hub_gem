@@ -28,7 +28,8 @@ module Spree
       context "with hub enabled" do
 
         before do
-          Spree::Hub::Config[:enable_hub] = true
+          Spree::Hub::Config[:enable_push] = true
+          Spree::Hub::Config[:enable_auto_push] = true
         end
 
         it "serializes Inventory object and push it to the hub" do

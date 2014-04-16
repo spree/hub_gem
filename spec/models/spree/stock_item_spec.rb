@@ -7,7 +7,8 @@ module Spree
     let!(:stock_item) { variant.stock_items.first }
 
     it "pushes serialized JSON after saved" do
-      Spree::Hub::Config[:enable_hub] = true
+      Spree::Hub::Config[:enable_push] = true
+      Spree::Hub::Config[:enable_auto_push] = true
       expect(Spree::Hub::StockItemSerializer).to receive(:push_it).with(stock_item)
       stock_item.save!
     end
