@@ -44,12 +44,17 @@ Add the hub credentials to `config/initializers/spree.rb`:
 ```ruby
 Spree::Hub::Config[:hub_store_id] = "34werwerwer"
 Spree::Hub::Config[:hub_token] = "sdfsfddfdss"
-Spree::Hub::Config[:enable_hub] = true
+Spree::Hub::Config[:enable_push] = true
 ```
 
 If given a Push URL, you may need to set the following:
 ```ruby
 Spree::Hub::Config[:hub_push_uri] = "new url"
+```
+
+To enable auto pushing of objects make sure the following configuration option is set
+```ruby
+Spree::Hub::Config[:enable_auto_push] = true
 ```
 
 Add the push `after_commit` to `Spree::Order`.
