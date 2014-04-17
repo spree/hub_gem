@@ -57,12 +57,6 @@ To enable auto pushing of objects make sure the following configuration option i
 Spree::Hub::Config[:enable_auto_push] = true
 ```
 
-Add the push `after_commit` to `Spree::Order`.
-
-```ruby
-Spree::Order.after_commit -> { Spree::Hub::OrderSerializer.push_it self }
-```
-
 Consuming webhooks from the hub
 -------------------------------
 
@@ -77,8 +71,7 @@ So with the `add_product` sample, we will initialize `Spree::Hub::Handler::AddPr
 
 Make sure you inherit your handler from `Spree::Hub::Handler::Base`
 
-For some sample handlers (add_product and add_order) see [this gists](https://gist.github.com/peterberkenbosch/9930735)
+You can also use the [spree_hub_handlers extension](https://github.com/spree/spree_hub_handlers).
 
-Todo: extend the docs here!
 
 Copyright (c) 2014 Spree Commerce, Inc. and other contributors, released under the New BSD License
