@@ -17,7 +17,6 @@ module Spree
             end
           end
           self.parameters ||= {}
-
         end
 
         def self.build_handler(path, message)
