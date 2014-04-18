@@ -15,8 +15,7 @@ module Spree
 
       class << self
         def push_it(order)
-          root = order.state == 'complete' ? 'orders': 'carts'
-          payload = ActiveModel::ArraySerializer.new([order], each_serializer: OrderSerializer, root: root).to_json
+          payload = ActiveModel::ArraySerializer.new([order], each_serializer: OrderSerializer, root: 'orders').to_json
           Client.push(payload)
         end
       end
