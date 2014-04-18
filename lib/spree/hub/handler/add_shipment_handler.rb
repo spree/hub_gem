@@ -10,6 +10,7 @@ module Spree
           order_number = shipment.delete(:order_id)
           order = Spree::Order.find_by_number(order_number)
           return response("Can't find order #{order_number} associated with this shipment", 500) unless order
+
           shipment[:order_id] = order.id
 
           external_id = shipment.delete(:id)
@@ -58,7 +59,7 @@ module Spree
               next
             end
 
-            line_item_id = order.line_items.where(variant_id: 2).pluck(:id).first
+            line_item_id = order.line_items.where(variant_id: variant.id).pluck(:id).first
             unless line_item_id
               missing_line_items << sku
               next
