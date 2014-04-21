@@ -4,10 +4,10 @@ module Spree
   module Hub
     class OrderSerializer < ActiveModel::Serializer
 
-      attributes :id, :status, :channel, :email, :currency, :placed_on, :updated_at, :totals
+      attributes :id, :status, :channel, :email, :currency, :placed_on, :updated_at, :totals,
+        :adjustments
 
       has_many :line_items,  serializer: Spree::Hub::LineItemSerializer
-      has_many :adjustments, serializer: Spree::Hub::AdjustmentSerializer
       has_many :payments, serializer: Spree::Hub::PaymentSerializer
 
       has_one :shipping_address, serializer: Spree::Hub::AddressSerializer
@@ -44,12 +44,28 @@ module Spree
         {
           item: object.item_total.to_f,
           adjustment: object.adjustment_total.to_f,
-          tax: (object.included_tax_total + object.additional_tax_total).to_f,
-          shipping: object.shipment_total.to_f,
+          tax: tax_total,
+          shipping: shipping_total,
           payment: object.payments.completed.sum(:amount).to_f,
           order: object.total.to_f
         }
       end
+
+      def adjustments
+        [
+          { name: "tax", value: tax_total },
+          { name: "shipping", value: shipping_total }
+        ]
+      end
+
+      private
+        def shipping_total
+          object.shipment_total.to_f
+        end
+
+        def tax_total
+          (object.included_tax_total + object.additional_tax_total).to_f
+        end
     end
   end
 end
