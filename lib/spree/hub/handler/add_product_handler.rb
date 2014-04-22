@@ -43,10 +43,12 @@ module Spree
 
         private
           def set_up_shipping_category
-            if shipping_category = params.delete(:shipping_category)
-              id = ShippingCategory.find_or_create_by(name: shipping_category).id
-              params[:shipping_category_id] = id
-            end
+            id = ShippingCategory.find_or_create_by(name: shipping_category).id
+            params[:shipping_category_id] = id
+          end
+
+          def shipping_category
+            params.delete(:shipping_category) || parameters["spree_shipping_category"] || "Default"
           end
       end
     end
