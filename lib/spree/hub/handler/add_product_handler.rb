@@ -13,6 +13,7 @@ module Spree
 
           params.delete :options
           params.delete :properties
+          params.delete :images
           params.delete :parent_id
 
           params[:slug] = params.delete :permalink if params[:permalink].present?
