@@ -57,8 +57,20 @@ To enable auto pushing of objects make sure the following configuration option i
 Spree::Hub::Config[:enable_auto_push] = true
 ```
 
-Consuming webhooks from the hub
--------------------------------
+Default incoming webhooks from the hub
+--------------------------------------
+
+The following 5 incoming webhooks are implemented:
+
+Set Inventory '/set_inventory'
+Add Shipment '/add_shipment'
+Update Shipment '/update_shipment'
+Add Product '/add_product'
+Update Product '/update_product'
+
+
+Consuming custom webhooks from the hub
+--------------------------------------
 
 This extension provides your store with a generic endpoint to receive any webhook called
 from the hub. The format for all of those is: `http://mystore.com/hub/<WEBHOOK>`
