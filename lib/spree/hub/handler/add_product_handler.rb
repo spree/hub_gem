@@ -16,8 +16,6 @@ module Spree
           params.delete :images
           params.delete :parent_id
 
-          params[:slug] = params.delete :permalink if params[:permalink].present?
-
           # FIXME Getting errors like this for nested taxons:
           #
           #   NoMethodError:
@@ -44,7 +42,7 @@ module Spree
 
         private
           def set_up_shipping_category
-            id = ShippingCategory.find_or_create_by(name: shipping_category).id
+            id = ShippingCategory.find_or_create_by_name(shipping_category).id
             params[:shipping_category_id] = id
           end
 

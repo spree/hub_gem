@@ -16,8 +16,6 @@ module Spree
           params.delete :images
           params.delete :parent_id
 
-          params[:slug] = params.delete :permalink if params[:permalink].present?
-
           # FIXME Getting errors like this for nested taxons:
           #
           #   NoMethodError:
@@ -33,7 +31,7 @@ module Spree
 
           set_up_shipping_category
 
-          unless master = Variant.find_by(sku: params[:sku], is_master: true)
+          unless master = Variant.where(sku: params[:sku], is_master: true).first
             response("Could not find product wih sku #{paramas[:sku]}", 500) and return
           end
 
@@ -49,7 +47,7 @@ module Spree
         private
           def set_up_shipping_category
             if shipping_category
-              id = ShippingCategory.find_or_create_by(name: shipping_category).id
+              id = ShippingCategory.find_or_create_by_name(shipping_category).id
               params[:shipping_category_id] = id
             end
           end

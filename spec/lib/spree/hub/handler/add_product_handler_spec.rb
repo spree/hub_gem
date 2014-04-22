@@ -30,7 +30,7 @@ module Spree
             end
 
             it "will store the permalink as the slug" do
-              expect(Spree::Product.where(slug: message["product"]["permalink"]).count).to eql 1
+              expect(Spree::Product.where(permalink: message["product"]["permalink"]).count).to eql 1
             end
           end
 
