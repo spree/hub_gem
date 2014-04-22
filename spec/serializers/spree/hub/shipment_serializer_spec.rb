@@ -48,8 +48,7 @@ module Spree
 
       it "serializes the address as shipping_address" do
         expect(serialized_shipment["shipping_address"]).to_not be_nil
-        address = JSON.parse(AddressSerializer.new(shipment.address, root: false).to_json)
-        expect(serialized_shipment["shipping_address"]).to eql address
+        expect(serialized_shipment["shipping_address"]).to eql JSON.parse(shipment.order.ship_address.to_json)
       end
 
       it "serializes the line_items as items" do
