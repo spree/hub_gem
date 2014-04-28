@@ -24,7 +24,6 @@ end
 
 require 'rspec/rails'
 require 'rspec/autorun'
-require 'database_cleaner'
 require 'ffaker'
 require 'hub/samples'
 
@@ -32,21 +31,33 @@ require 'hub/samples'
 # in spec/support/ and its subdirectories.
 Dir[File.dirname(__FILE__) + "/support/**/*.rb"].each {|f| require f}
 
-require 'spree/testing_support/factories'
-require 'spree/testing_support/preferences'
-require 'spree/testing_support/controller_requests'
+# Requires factories defined in spree_core
+require 'spree/core/testing_support/factories'
+require 'spree/core/testing_support/controller_requests'
+require 'spree/core/testing_support/authorization_helpers'
+require 'spree/core/url_helpers'
 
 RSpec.configure do |config|
   config.backtrace_exclusion_patterns = [/gems\/activesupport/, /gems\/actionpack/, /gems\/rspec/]
   config.color = true
 
+
+  config.include Spree::Core::TestingSupport::Preferences, :type => :controller
+  config.include Spree::Core::TestingSupport::ControllerRequests, :type => :controller
+
   config.include FactoryGirl::Syntax::Methods
-  config.include Spree::TestingSupport::Preferences, :type => :controller
-  config.include Spree::TestingSupport::ControllerRequests, :type => :controller
+  # == URL Helpers
+  #
+  # Allows access to Spree's routes in specs:
+  #
+  # visit spree.admin_path
+  # current_path.should eql(spree.products_path)
+  config.include Spree::Core::UrlHelpers
 
   config.fail_fast = ENV['FAIL_FAST'] || false
 
   config.use_transactional_fixtures = true
+
   config.before do
     Spree::Hub::Config[:hub_store_id] = "234254as3423r3243"
     Spree::Hub::Config[:hub_token] = "abc1233"
