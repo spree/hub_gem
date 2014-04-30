@@ -65,7 +65,7 @@ from the hub. The format for all of those is: `http://mystore.com/hub/<WEBHOOK>`
 
 So for the add_product webhook, the endpoint url is `http://mystore.com/hub/add_product`
 
-You need to implement the webhook handler yourself, since no store is a like.
+You need to implement the webhook handler yourself, since no store is alike.
 The convention with this extension is that we dynamicly initialize a handler based on the webhook.
 So with the `add_product` sample, we will initialize `Spree::Hub::Handler::AddProductHandler` and call `process`
 
