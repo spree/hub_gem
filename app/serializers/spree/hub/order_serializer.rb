@@ -13,13 +13,6 @@ module Spree
       has_one :shipping_address, serializer: Spree::Hub::AddressSerializer
       has_one :billing_address, serializer: Spree::Hub::AddressSerializer
 
-      class << self
-        def push_it(order)
-          payload = ActiveModel::ArraySerializer.new([order], each_serializer: OrderSerializer, root: 'orders').to_json
-          Client.push(payload)
-        end
-      end
-
       def id
         object.number
       end

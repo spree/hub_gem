@@ -109,19 +109,6 @@ module Spree
         end
 
       end
-
-      context "with hub enabled" do
-
-        before do
-          Spree::Hub::Config[:enable_push] = true
-          Spree::Hub::Config[:enable_auto_push] = true
-        end
-
-        it "serializes Product object and push it to the hub" do
-          expect(HTTParty).to receive(:post)
-          described_class.push_it variant
-        end
-      end
     end
   end
 end

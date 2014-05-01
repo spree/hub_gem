@@ -8,7 +8,7 @@ module Spree
     it "pushes serialized JSON after saved" do
       Spree::Hub::Config[:enable_push] = true
       Spree::Hub::Config[:enable_auto_push] = true
-      expect(Spree::Hub::ShipmentSerializer).to receive(:push_it).with(shipment)
+      expect(shipment).to receive(:push_to_hub)
       shipment.save!
     end
 
