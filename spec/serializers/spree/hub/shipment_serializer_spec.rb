@@ -66,7 +66,6 @@ module Spree
         )
         expect(serialized_shipment["items"]).to eql line_items
       end
-
     end
   end
 end

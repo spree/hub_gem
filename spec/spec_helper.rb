@@ -33,6 +33,8 @@ require 'spree/core/testing_support/factories'
 require 'spree/core/testing_support/controller_requests'
 require 'spree/core/testing_support/authorization_helpers'
 require 'spree/core/url_helpers'
+require 'active_model/serializer'
+
 
 RSpec.configure do |config|
   config.backtrace_exclusion_patterns = [/gems\/activesupport/, /gems\/actionpack/, /gems\/rspec/]
@@ -79,5 +81,12 @@ end
 class Spree::Hub::Handler::AddOrderHandler < Spree::Hub::Handler::Base
   def process
     response "Order added!"
+  end
+end
+
+class CustomSerializer < ActiveModel::Serializer
+  attributes :name
+  def name
+    "#{object.id} : #{object.name}"
   end
 end

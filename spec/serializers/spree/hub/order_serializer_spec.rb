@@ -49,11 +49,6 @@ module Spree
           end
         end
       end
-
-      it "serializes Order object and push it to the hub" do
-        expect(HTTParty).to receive(:post)
-        described_class.push_it order
-      end
     end
   end
 end
