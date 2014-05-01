@@ -30,7 +30,8 @@ Gem::Specification.new do |gem|
 
   gem.add_development_dependency 'capybara', '~> 2.0'
   gem.add_development_dependency 'coffee-rails'
-  gem.add_development_dependency 'factory_girl', '~> 4.2'
+  gem.add_development_dependency 'database_cleaner'
+  gem.add_development_dependency 'factory_girl_rails', '~> 1.7.0'
   gem.add_development_dependency 'ffaker'
   gem.add_development_dependency 'rspec-rails',  '~> 2.13'
   gem.add_development_dependency 'sass-rails'
