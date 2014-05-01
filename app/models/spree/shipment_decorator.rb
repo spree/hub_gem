@@ -1,1 +1,3 @@
-Spree::Shipment.after_commit -> { Spree::Hub::ShipmentSerializer.push_it(self) if Spree::Hub::Config[:enable_auto_push] }
+Spree::Shipment.send(:include, Spree::Hub::AutoPush)
+Spree::Shipment.hub_serializer = "Spree::Hub::ShipmentSerializer"
+Spree::Shipment.json_root_name = 'shipments'

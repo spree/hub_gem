@@ -22,20 +22,6 @@ module Spree
         it "serializes the count_on_hand for quantity" do
           expect(JSON.parse(serialized_stock_item)["quantity"]).to eql stock_item.count_on_hand
         end
-
-      end
-
-      context "with hub enabled" do
-
-        before do
-          Spree::Hub::Config[:enable_push] = true
-          Spree::Hub::Config[:enable_auto_push] = true
-        end
-
-        it "serializes Inventory object and push it to the hub" do
-          expect(HTTParty).to receive(:post)
-          described_class.push_it stock_item
-        end
       end
 
     end
