@@ -62,6 +62,7 @@ module Spree
       end
 
       it "serializes the line_items as items" do
+        shipment.stub(:line_items).and_return order.line_items
         expect(shipment.line_items).to_not be_nil
         expect(shipment.line_items).to_not be_empty
         expect(serialized_shipment["items"]).to_not be_nil
