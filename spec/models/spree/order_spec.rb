@@ -11,7 +11,7 @@ module Spree
     end
 
     it "pushes serialized JSON after saved" do
-      expect(Spree::Hub::OrderSerializer).to receive(:push_it).with(order)
+      expect(order).to receive(:push_to_hub)
       order.save!
     end
 

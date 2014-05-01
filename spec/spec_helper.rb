@@ -35,6 +35,7 @@ Dir[File.dirname(__FILE__) + "/support/**/*.rb"].each {|f| require f}
 require 'spree/testing_support/factories'
 require 'spree/testing_support/preferences'
 require 'spree/testing_support/controller_requests'
+require 'active_model/serializer'
 
 RSpec.configure do |config|
   config.backtrace_exclusion_patterns = [/gems\/activesupport/, /gems\/actionpack/, /gems\/rspec/]
