@@ -73,3 +73,10 @@ class Spree::Hub::Handler::AddOrderHandler < Spree::Hub::Handler::Base
     response "Order added!"
   end
 end
+
+class CustomSerializer < ActiveModel::Serializer
+  attributes :name
+  def name
+    "#{object.id} : #{object.name}"
+  end
+end
