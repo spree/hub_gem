@@ -65,20 +65,6 @@ module Spree
         )
         expect(serialized_shipment["items"]).to eql line_items
       end
-
-      context "with hub enabled" do
-
-        before do
-          Spree::Hub::Config[:enable_push] = true
-          Spree::Hub::Config[:enable_auto_push] = true
-        end
-
-        it "serializes Shipment object and push it to the hub" do
-          expect(HTTParty).to receive(:post)
-          described_class.push_it shipment
-        end
-      end
-
     end
   end
 end

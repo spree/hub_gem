@@ -10,13 +10,6 @@ module Spree
 
       has_many :images, serializer: Spree::Hub::ImageSerializer
 
-      class << self
-        def push_it(product)
-          payload = ActiveModel::ArraySerializer.new([product], each_serializer: VariantSerializer, root: 'products').to_json
-          Client.push(payload)
-        end
-      end
-
       def parent_id
         object.is_master? ? nil : object.product.master.id
       end

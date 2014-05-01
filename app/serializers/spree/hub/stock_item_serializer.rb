@@ -19,13 +19,6 @@ module Spree
         object.count_on_hand
       end
 
-      class << self
-        def push_it(stock_item)
-          payload = ActiveModel::ArraySerializer.new([stock_item], each_serializer: StockItemSerializer, root: 'inventory').to_json
-          Client.push(payload)
-        end
-      end
-
     end
   end
 end

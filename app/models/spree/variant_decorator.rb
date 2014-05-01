@@ -1,1 +1,3 @@
-Spree::Variant.after_commit -> { Spree::Hub::VariantSerializer.push_it(self) if Spree::Hub::Config[:enable_auto_push] }
+Spree::Variant.send(:include, Spree::Hub::AutoPush)
+Spree::Variant.hub_serializer = "Spree::Hub::VariantSerializer"
+Spree::Variant.json_root_name = 'products'
