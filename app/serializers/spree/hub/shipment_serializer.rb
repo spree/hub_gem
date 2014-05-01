@@ -30,7 +30,7 @@ module Spree
       end
 
       def stock_location
-        object.stock_location.name
+        nil
       end
 
       def shipping_method
@@ -38,7 +38,7 @@ module Spree
       end
 
       def updated_at
-        object.updated_at.iso8601
+        object.updated_at.try(:iso8601)
       end
 
       def shipped_at
