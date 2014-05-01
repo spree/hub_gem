@@ -22,7 +22,8 @@ module Spree
         end
 
         it "serializes the shipping category name as shipping_category" do
-          expect(serialized_variant["shipping_category"]).to eql variant.shipping_category.name
+          shipping_category = Spree::ShippingCategory.find(variant.shipping_category_id)
+          expect(serialized_variant["shipping_category"]).to eql shipping_category.name
         end
 
         context "without taxons" do
@@ -69,7 +70,7 @@ module Spree
         end
 
         context "for master product" do
-          let(:variant) { create(:master_variant) }
+          let(:variant) { create(:product).master }
 
           it "serializes the parent_id as nil" do
             expect(serialized_variant["parent_id"]).to eql nil

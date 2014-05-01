@@ -6,7 +6,7 @@ module Spree
 
       attributes :id, :parent_id, :name, :sku, :description, :price, :cost_price,
                   :available_on, :permalink, :meta_description, :meta_keywords,
-                  :taxons, :options, :images
+                  :taxons, :options, :images, :shipping_category
 
       has_many :images, serializer: Spree::Hub::ImageSerializer
 
@@ -31,7 +31,7 @@ module Spree
       end
 
       def shipping_category
-        object.shipping_category.name
+        object.product.shipping_category.name
       end
 
       def taxons
