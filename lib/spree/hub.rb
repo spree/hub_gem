@@ -10,3 +10,12 @@ require 'spree/hub/engine'
 require 'spree/hub/responder'
 
 require 'spree/hub/handler/base'
+require 'spree/hub/handler/set_inventory_handler'
+
+require 'spree/hub/handler/product_handler_base'
+require 'spree/hub/handler/add_product_handler'
+require 'spree/hub/handler/update_product_handler'
+
+require 'spree/hub/handler/shipment_handler_base'
+require 'spree/hub/handler/add_shipment_handler'
+require 'spree/hub/handler/update_shipment_handler'
