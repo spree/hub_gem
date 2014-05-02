@@ -16,6 +16,12 @@ module Spree
             expect{handler.process}.to change{variant.reload.count_on_hand}.from(5).to(93)
           end
 
+          it "returns a Hub::Responder with a proper message" do
+            responder = handler.process
+            expect(responder.summary).to eql "Set inventory for Product with id SPREE-T-SHIRT from 5 to 93"
+            expect(responder.code).to eql 200
+          end
+
         end
 
       end
