@@ -26,7 +26,6 @@ module Spree
             address_attributes[:state_id] = state.id
             address_attributes[:state_name] = state.name
           end
-          binding.pry
 
           shipment[:address_attributes] = address_attributes
           email = shipment.delete(:email)
