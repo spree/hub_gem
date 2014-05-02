@@ -21,7 +21,6 @@ module Spree
           missing_variants = inventory_units_hash[:missing_variants]
           missing_line_items = inventory_units_hash[:missing_line_items]
           inventory_units_attributes = inventory_units_hash[:inventory_units_attributes]
-          binding.pry
 
           return response("Can't find variants with the following skus: #{missing_variants.join(', ')}", 500) unless missing_variants.empty?
           return response("Can't find line_items with the following skus: #{missing_line_items.join(', ')} in the order.", 500) unless missing_line_items.empty?
@@ -36,7 +35,6 @@ module Spree
           shipment.update!(order)
 
           return response("Added shipment #{shipment.number} for order #{order.number}")
-
         end
 
       end
