@@ -4,6 +4,85 @@ module Spree
       class AddShipmentHandler < ShipmentHandlerBase
 
         def process
+
+          shipment = @payload[:shipment]
+
+          order_number = shipment.delete(:order_id)
+          order = Spree::Order.find_by_number(order_number)
+          return response("Can't find order #{order_number} associated with this shipment", 500) unless order
+
+          external_id = shipment.delete(:id)
+
+          address_attributes = shipment.delete(:shipping_address)
+          country_iso = address_attributes.delete(:country)
+          country = Spree::Country.find_by_iso(country_iso)
+          return response("Can't find a country with iso name #{country_iso}!", 500) unless country_iso
+          address_attributes[:country_id] = country.id
+
+          state_name = address_attributes.delete(:state)
+          if state_name
+            state = Spree::State.find_by_name(state_name)
+            return response("Can't find a State with name #{state_name}!", 500) unless state
+            address_attributes[:state_id] = state.id
+            address_attributes[:state_name] = state.name
+          end
+          binding.pry
+
+          shipment[:address_attributes] = address_attributes
+          email = shipment.delete(:email)
+
+          shipping_method_name = shipment.delete(:shipping_method)
+          shipping_method = Spree::ShippingMethod.find_by_name(shipping_method_name)
+          return response("Can't find a ShippingMethod with name #{shipping_method_name}!", 500) unless shipping_method
+
+          # build the inventory units
+          inventory_units_attributes = []
+          missing_variants = []
+          missing_line_items = []
+
+          shipping_items = shipment.delete(:items)
+
+          shipping_items.each do |shipping_item|
+            # get variant
+            sku = shipping_item[:product_id]
+            variant = Spree::Variant.find_by_sku(sku)
+
+            unless variant.present?
+              missing_variants << sku
+              next
+            end
+
+            line_item_id = order.line_items.where(variant_id: variant.id).pluck(:id).first
+            unless line_item_id
+              missing_line_items << sku
+              next
+            end
+            quantity = shipping_item[:quantity]
+            quantity.times do
+              inventory_unit = {
+                variant_id: variant.id,
+                order_id: order.id
+              }
+              inventory_units_attributes << inventory_unit
+            end
+          end
+
+          return response("Can't find variants with the following skus: #{missing_variants.join(', ')}", 500) unless missing_variants.empty?
+          return response("Can't find line_items with the following skus: #{missing_line_items.join(', ')} in the order.", 500) unless missing_line_items.empty?
+
+          shipment[:inventory_units_attributes] = inventory_units_attributes
+
+          shipment[:state] = shipment.delete(:status)
+
+          shipment.delete(:stock_location)
+
+          shipment = order.shipments.new(shipment)
+          shipment.shipping_method = shipping_method
+          shipment.save!
+          shipment.update!(order)
+
+          return response("Added shipment #{shipment.number} for order #{order.number}")
+
         end
 
       end
