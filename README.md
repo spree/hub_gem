@@ -8,13 +8,30 @@ Installation
 Add spree_hub to your Gemfile:
 
 ```ruby
-gem 'spree_hub', github: 'spree/hub_gem'
+gem 'spree_hub', github: 'spree/hub_gem', branch: '2-2-stable'
 ```
 
 Bundle your dependencies:
 
 ```shell
 bundle
+```
+
+Add the hub credentials to `config/initializers/spree.rb`:
+
+```ruby
+Spree::Hub::Config[:hub_token] = "sdfsfddfdss"
+Spree::Hub::Config[:enable_push] = true
+```
+
+If given a Push URL, you may need to set the following:
+```ruby
+Spree::Hub::Config[:hub_push_uri] = "new url"
+```
+
+To enable auto pushing of objects make sure the following configuration option is set
+```ruby
+Spree::Hub::Config[:enable_auto_push] = true
 ```
 
 Testing
@@ -34,27 +51,6 @@ Simply add this require statement to your spec_helper:
 require 'spree_hub/factories'
 ```
 
-Sample Order Decorator
-----------------------
-
-Note: this will be abstracted soon in `Spree::Hub::Client`
-
-Add the hub credentials to `config/initializers/spree.rb`:
-
-```ruby
-Spree::Hub::Config[:hub_token] = "sdfsfddfdss"
-Spree::Hub::Config[:enable_push] = true
-```
-
-If given a Push URL, you may need to set the following:
-```ruby
-Spree::Hub::Config[:hub_push_uri] = "new url"
-```
-
-To enable auto pushing of objects make sure the following configuration option is set
-```ruby
-Spree::Hub::Config[:enable_auto_push] = true
-```
 
 Consuming webhooks from the hub
 -------------------------------
