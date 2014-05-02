@@ -42,7 +42,6 @@ Note: this will be abstracted soon in `Spree::Hub::Client`
 Add the hub credentials to `config/initializers/spree.rb`:
 
 ```ruby
-Spree::Hub::Config[:hub_store_id] = "34werwerwer"
 Spree::Hub::Config[:hub_token] = "sdfsfddfdss"
 Spree::Hub::Config[:enable_push] = true
 ```
@@ -70,8 +69,6 @@ The convention with this extension is that we dynamicly initialize a handler bas
 So with the `add_product` sample, we will initialize `Spree::Hub::Handler::AddProductHandler` and call `process`
 
 Make sure you inherit your handler from `Spree::Hub::Handler::Base`
-
-You can also use the [spree_hub_handlers extension](https://github.com/spree/spree_hub_handlers).
 
 
 Copyright (c) 2014 Spree Commerce, Inc. and other contributors, released under the New BSD License
