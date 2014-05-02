@@ -19,7 +19,6 @@ module Spree
             order.reload
           end
 
-          #let!(:stock_location) { create(:stock_location, name: 'default')}
           let!(:shipping_method) { create(:shipping_method, name: 'UPS Ground (USD)')}
           let!(:country) { Spree::Country.first }
           let!(:state) { create(:state, :country => country, name: "California", abbr: "CA") }
