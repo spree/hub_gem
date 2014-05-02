@@ -9,7 +9,7 @@ module Spree
 
       describe "process" do
 
-        context "with stock item present" do
+        context "with variant present" do
           let!(:variant) { create(:variant, :sku => 'SPREE-T-SHIRT') }
 
           it "will set the inventory to the supplied amount" do
@@ -23,6 +23,14 @@ module Spree
           end
 
         end
+        context "with variant not present" do
+          it "returns a Hub::Responder with 500 status" do
+            responder = handler.process
+            expect(responder.summary).to eql "Product with id SPREE-T-SHIRT was not found"
+            expect(responder.code).to eql 500
+          end
+        end
+
 
       end
 
