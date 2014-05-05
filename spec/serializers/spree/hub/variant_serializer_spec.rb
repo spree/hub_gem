@@ -17,6 +17,11 @@ module Spree
           expect(serialized_variant["cost_price"].class).to eql Float
         end
 
+        it "does not serialize the available_on if it is not available" do
+          variant.available_on = nil
+          expect(serialized_variant["available_on"]).to be_nil
+        end
+
         it "serializes the available_on in ISO format" do
           expect(serialized_variant["available_on"]).to match /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/
         end
