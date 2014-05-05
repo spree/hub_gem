@@ -1,4 +1,5 @@
 require 'active_support/concern'
+require 'active_model/array_serializer'
 
 module Spree
   module Hub
