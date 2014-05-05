@@ -16,8 +16,6 @@ module Spree
           params.delete :images
           params.delete :parent_id
 
-          params[:slug] = params.delete :permalink if params[:permalink].present?
-
           # FIXME Getting errors like this for nested taxons:
           #
           #   NoMethodError:

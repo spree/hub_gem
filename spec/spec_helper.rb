@@ -42,7 +42,7 @@ RSpec.configure do |config|
   config.color = true
 
   config.include FactoryGirl::Syntax::Methods
-  config.include Spree::TestingSupport::Preferences, :type => :controller
+  config.include Spree::TestingSupport::Preferences
   config.include Spree::TestingSupport::ControllerRequests, :type => :controller
 
   config.fail_fast = ENV['FAIL_FAST'] || false

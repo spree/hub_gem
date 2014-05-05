@@ -67,7 +67,6 @@ module Spree
               inventory_unit = {
                 variant_id: variant.id,
                 order_id: shipment.order.id,
-                line_item_id: line_item_id
               }
               inventory_units_attributes << inventory_unit
             end

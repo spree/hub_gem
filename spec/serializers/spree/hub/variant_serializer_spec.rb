@@ -21,10 +21,6 @@ module Spree
           expect(serialized_variant["available_on"]).to match /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/
         end
 
-        it "serializes the slug as permalink" do
-          expect(serialized_variant["permalink"]).to eql variant.slug
-        end
-
         it "serializes the shipping category name as shipping_category" do
           expect(serialized_variant["shipping_category"]).to eql variant.shipping_category.name
         end

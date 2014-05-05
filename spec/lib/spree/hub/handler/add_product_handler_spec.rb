@@ -29,8 +29,8 @@ module Spree
               handler.process
             end
 
-            it "will store the permalink as the slug" do
-              expect(Spree::Product.where(slug: message["product"]["permalink"]).count).to eql 1
+            it "will store the permalink" do
+              expect(Spree::Product.where(permalink: message["product"]["permalink"]).count).to eql 1
             end
           end
 
@@ -91,7 +91,7 @@ module Spree
 
             it "will assign the taxon leaves to the product" do
               handler.process
-              product = Spree::Product.find_by_slug("other-permalink-then-name")
+              product = Spree::Product.find_by_permalink("other-permalink-then-name")
               expect(product.taxons.count).to eql 3
               product.taxons.each do |taxon|
                 expect(taxon.leaf?).to be_true
@@ -118,7 +118,7 @@ module Spree
             # Will create the 'color' and 'size' option_types
             it "will assign those option_types to the product" do
               handler.process
-              product = Spree::Product.find_by_slug("other-permalink-then-name")
+              product = Spree::Product.find_by_permalink("other-permalink-then-name")
               expect(product.option_types.pluck(:name)).to eql ["color", "size"]
             end
           end
