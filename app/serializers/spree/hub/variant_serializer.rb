@@ -23,7 +23,7 @@ module Spree
       end
 
       def available_on
-        object.available_on.iso8601
+        object.available_on.iso8601 if object.available_on
       end
 
       def permalink
