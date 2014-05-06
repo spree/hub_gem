@@ -1,56 +1,158 @@
+require 'open-uri'
+
 module Spree
   module Hub
     module Handler
       class AddProductHandler < Base
-        attr_reader :params, :options, :taxon_ids, :parent_id
+
+        attr_accessor :taxon_ids
 
         def initialize(message)
-          super message
-
-          @params = @payload[:product]
-          @parent_id = params[:parent_id]
+          super(message)
           @taxon_ids = []
-
-          params.delete :options
-          params.delete :properties
-          params.delete :images
-          params.delete :parent_id
-
-          params[:slug] = params.delete :permalink if params[:permalink].present?
-
-          # FIXME Getting errors like this for nested taxons:
-          #
-          #   NoMethodError:
-          #   undefined method `touch' for nil:NilClass
-          #   .../spree-fa1cb8c1d3a8/core/app/models/spree/taxon.rb:87:in `touch_ancestors_and_taxonomy'
-          #
-          params.delete :taxons
         end
 
         def process
-          params.delete :channel
-          params.delete :id
+          params = @payload[:product]
 
-          set_up_shipping_category
+          children_params = params.delete(:variants)
 
-          @product = Core::Importer::Product.new(nil, params).create
+          #posible master images
+          images = params.delete(:images)
+          product = process_root_product(params)
+          process_images(product.master, images)
 
-          if @product.persisted?
-            response "Product (#{@product.id}) and master variant (#{@product.master.id}) created"
+          if children_params
+            process_child_products(product, children_params)
+          end
+
+          if product.valid?
+            if product.variants.count > 0
+              response "Product #{product.sku} added, with child skus: #{product.variants.pluck(:sku)}"
+            else
+              response "Product #{product.sku} added"
+            end
+
           else
-            response "Could not save the Product #{@product.errors.messages.inspect}", 500
+            response "Cannot add the product due to validation errors", 500
           end
         end
 
-        private
-          def set_up_shipping_category
-            id = ShippingCategory.find_or_create_by(name: shipping_category).id
-            params[:shipping_category_id] = id
+        # the Spree::Product and Spree::Variant master
+        # it's the top level 'product'
+        def process_root_product(params)
+
+          id = params.delete(:id)
+          permalink = params.delete(:permalink)
+          taxons = params.delete(:taxons)
+          shipping_category_name = params.delete(:shipping_category)
+          options = params.delete(:options)
+          properties = params.delete(:properties)
+
+          process_taxons(taxons)
+
+          params[:slug] = permalink if permalink.present?
+          params[:taxon_ids] = Spree::Taxon.where(id: @taxon_ids).leaves.pluck(:id)
+          params[:shipping_category_id] = process_shipping_category(shipping_category_name)
+          product = Spree::Product.create!(params)
+
+          process_option_types(product, options)
+          process_properties(product, properties)
+
+          product
+        end
+
+        # adding variants to the product based on the children hash
+        def process_child_products(product, children)
+          return unless children.present?
+
+          children.each do |child_product|
+
+            # used for possible assembly feature.
+            quantity = child_product.delete(:quantity)
+
+            option_type_values = child_product.delete(:options)
+
+            child_product[:options] = option_type_values.collect {|k,v| {name: k, value: v} }
+
+            images = child_product.delete(:images)
+            variant = product.variants.create({ product: product }.merge(child_product))
+            process_images(variant, images)
           end
 
-          def shipping_category
-            params.delete(:shipping_category) || parameters["spree_shipping_category"] || "Default"
+        end
+
+        # ['color', 'size']
+        def process_option_types(product, options)
+          return unless options.present?
+
+          options.each do |option_type_name|
+            option_type = Spree::OptionType.where(name: option_type_name).first_or_initialize do |option_type|
+              option_type.presentation = option_type_name
+              option_type.save!
+            end
+            product.option_types << option_type unless product.option_types.include?(option_type)
           end
+        end
+
+        #{"material" => "cotton", "fit" => "smart fit"}
+        def process_properties(product, properties)
+          return unless properties.present?
+          properties.keys.each do |property_name|
+            property = Spree::Property.where(name: property_name).first_or_initialize do |property|
+              property.presentation = property_name
+              property.save!
+            end
+            Spree::ProductProperty.where(product: product, property: property).first_or_initialize do |pp|
+              pp.value = properties[property_name]
+              pp.save!
+            end
+          end
+        end
+
+        def process_shipping_category(shipping_category_name)
+          Spree::ShippingCategory.where(name: shipping_category_name).first_or_create.id
+        end
+
+        def process_taxons(taxons)
+          return unless taxons.present?
+          taxons.each do |taxons_path|
+            return unless taxons_path.present?
+            taxonomy_name = taxons_path.shift
+            taxonomy = Spree::Taxonomy.where(name: taxonomy_name).first_or_create
+            add_taxon(taxonomy.root, taxons_path)
+          end
+        end
+
+        # recursive method to add the taxons
+        def add_taxon(parent, taxon_names, position = 0)
+          return unless taxon_names.present?
+          taxon_name = taxon_names.shift
+          # first_or_create is broken :(
+          taxon = Spree::Taxon.where(name: taxon_name, parent_id: parent.id).first
+          if taxon
+            parent.children << taxon
+          else
+            taxon = parent.children.create(name: taxon_name, position: position)
+          end
+          parent.save
+          # store the taxon so we can assign it later
+          @taxon_ids << taxon.id
+          add_taxon(taxon, taxon_names, position+1)
+        end
+
+        def process_images(variant, images)
+          return unless images.present?
+
+          images.each do |image_hsh|
+            image = variant.images.create
+            image.attachment = open(image_hsh["url"])
+            image.position = image_hsh["position"]
+            image.alt = image_hsh["title"]
+            image.save!
+          end
+        end
+
       end
     end
   end
