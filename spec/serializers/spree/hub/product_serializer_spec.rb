@@ -5,7 +5,7 @@ module Spree
     describe ProductSerializer do
 
       let(:product) { create(:product) }
-      let(:serialized_product) { JSON.parse( ProductSerializer.new(product, root: false).to_json) }
+        let(:serialized_product) { JSON.parse( ProductSerializer.new(product, root: false).to_json) }
 
       context "format" do
 
@@ -101,6 +101,7 @@ module Spree
           let!(:product) {create(:product_with_option_types)}
           let!(:variant) { create(:variant, :product => product) }
           it "serialized the variant as nested objects" do
+            product.reload
             expect(serialized_product["variants"].count).to eql 1
           end
         end

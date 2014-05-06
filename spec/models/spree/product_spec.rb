@@ -1,15 +1,15 @@
 require 'spec_helper'
 
 module Spree
-  describe Variant do
+  describe Product do
 
-    let!(:variant) { create(:variant) }
+    let!(:product) { create(:product) }
 
     it "pushes serialized JSON after saved" do
       Spree::Hub::Config[:enable_push] = true
       Spree::Hub::Config[:enable_auto_push] = true
-      expect(variant).to receive(:push_to_hub)
-      variant.save!
+      expect(product).to receive(:push_to_hub)
+      product.save!
     end
 
   end
