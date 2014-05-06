@@ -1,62 +1,82 @@
+require 'open-uri'
+
 module Spree
   module Hub
     module Handler
-      class UpdateProductHandler < Base
-        attr_reader :params, :options, :taxon_ids, :parent_id
-
-        def initialize(message)
-          super message
-
-          @params = @payload[:product]
-          @parent_id = params[:parent_id]
-          @taxon_ids = []
-
-          params.delete :options
-          params.delete :properties
-          params.delete :images
-          params.delete :parent_id
-
-          params[:slug] = params.delete :permalink if params[:permalink].present?
-
-          # FIXME Getting errors like this for nested taxons:
-          #
-          #   NoMethodError:
-          #   undefined method `touch' for nil:NilClass
-          #   .../spree-fa1cb8c1d3a8/core/app/models/spree/taxon.rb:87:in `touch_ancestors_and_taxonomy'
-          #
-          params.delete :taxons
-        end
+      class UpdateProductHandler < ProductHandlerBase
 
         def process
-          params.delete :channel
-          params.delete :id
 
-          set_up_shipping_category
-
-          unless master = Variant.find_by(sku: params[:sku], is_master: true)
-            response("Could not find product wih sku #{paramas[:sku]}", 500) and return
+          if @missing_taxon_ids.present?
+            return response "Could not find Taxon with id's #{@missing_taxon_ids}, please make sure the taxon exists", 500
           end
 
-          @product = Core::Importer::Product.new(master.product, params).update
+          product = Spree::Product.find_by_id(@params[:id])
+          return response "Cannot find product with ID #{params[:id]}!", 500
 
-          if @product.errors.empty?
-            response "Product #{@product.id} updated"
+          # Disable the after_touch callback on taxons
+          Spree::Product.skip_callback(:touch, :after, :touch_taxons)
+
+          Spree::Product.transaction do
+            @product = process_root_product(product, root_product_attrs)
+            process_images(@product.master, @master_images)
+            process_child_products(@product, children_params) if @children_params
+          end
+
+          if @product.valid?
+            # set it again, and touch the product
+            Spree::Product.set_callback(:touch, :after, :touch_taxons)
+            @product.touch
+
+            if @product.variants.count > 0
+              response "Product #{@product.sku} updated, with child skus: #{@product.variants.pluck(:sku)}"
+            else
+              response "Product #{@product.sku} updated"
+            end
           else
-            response "Could not update the Product #{@product.errors.messages.inspect}", 500
+            response "Cannot update the product due to validation errors", 500
           end
+
         end
 
-        private
-          def set_up_shipping_category
-            if shipping_category
-              id = ShippingCategory.find_or_create_by(name: shipping_category).id
-              params[:shipping_category_id] = id
+        # the Spree::Product and Spree::Variant master
+        # it's the top level 'product'
+        def process_root_product(product, params)
+          product.update_attributes(params)
+          process_option_types(product, @root_options)
+          process_properties(product, @properties)
+
+          product
+        end
+
+        # adding variants to the product based on the children hash
+        def process_child_products(product, children)
+          return unless children.present?
+
+          children.each do |child_product|
+
+            # used for possible assembly feature.
+            quantity = child_product.delete(:quantity)
+
+            option_type_values = child_product.delete(:options)
+
+            child_product[:options] = option_type_values.collect {|k,v| {name: k, value: v} }
+
+            images = child_product.delete(:images)
+
+            product.variants.find(child_product['id'].to_i).update_attributes(child_product)
+
+            variant = product.variants.find_by_sku(child_product[:sku])
+            if variant
+              variant.update_attributes(child_product)
+            else
+              variant = product.variants.create({ product: product }.merge(child_product))
             end
+            process_images(variant, images)
           end
 
-          def shipping_category
-            @shipping_category ||= params.delete(:shipping_category) || parameters["spree_shipping_category"]
-          end
+        end
+
       end
     end
   end

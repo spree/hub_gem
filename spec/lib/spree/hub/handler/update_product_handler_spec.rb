@@ -12,7 +12,6 @@ module Spree
 
           let!(:message) do
             hsh = ::Hub::Samples::Product.request
-            hsh["product"]["parent_id"] = nil
             hsh["product"]["permalink"] = "other-permalink-then-name"
             hsh["product"].delete "images"
             hsh["product"].delete "children"
