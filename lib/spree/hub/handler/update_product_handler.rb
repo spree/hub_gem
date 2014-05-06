@@ -6,7 +6,6 @@ module Spree
       class UpdateProductHandler < ProductHandlerBase
 
         def process
-
           product = Spree::Variant.where(is_master: true, sku: params[:sku]).first.product
           return response("Cannot find product with SKU #{params[:sku]}!", 500) unless product
 

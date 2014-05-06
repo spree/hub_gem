@@ -4,11 +4,6 @@ module Spree
   module Hub
     describe Handler::UpdateProductHandler do
       context "#process" do
-        before do
-          product = create(:product)
-          product.master.update_column :sku, message["product"]["sku"]
-        end
-
         let!(:message) do
           hsh = ::Hub::Samples::Product.request
           hsh["product"]["permalink"] = "other-permalink-then-name"
@@ -16,6 +11,8 @@ module Spree
           #hsh["product"].delete "variants"
           hsh
         end
+
+        let!(:variant) { create(:master_variant, sku: message["product"]["sku"])}
 
         let(:handler) { Handler::UpdateProductHandler.new(message.to_json) }
 
