@@ -7,12 +7,8 @@ module Spree
 
         def process
 
-          if @missing_taxon_ids.present?
-            return response "Could not find Taxon with id's #{@missing_taxon_ids}, please make sure the taxon exists", 500
-          end
-
-          product = Spree::Product.find_by_id(@params[:id])
-          return response "Cannot find product with ID #{params[:id]}!", 500
+          product = Spree::Variant.where(is_master: true, sku: params[:sku]).first.product
+          return response("Cannot find product with SKU #{params[:sku]}!", 500) unless product
 
           # Disable the after_touch callback on taxons
           Spree::Product.skip_callback(:touch, :after, :touch_taxons)
