@@ -32,7 +32,7 @@ module Spree
         context "with stock item not present" do
           it "returns a Hub::Responder with 500 status" do
             responder = handler.process
-            expect(responder.summary).to eql "StockItem with id 12 was not found"
+            expect(responder.summary).to eql "Stock location with name us_warehouse was not found"
             expect(responder.code).to eql 500
           end
         end
