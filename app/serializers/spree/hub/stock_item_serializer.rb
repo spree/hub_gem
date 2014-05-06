@@ -8,7 +8,7 @@ module Spree
       attributes :id, :location, :product_id, :quantity
 
       def location
-        object.stock_location_id
+        object.stock_location.name
       end
 
       def product_id

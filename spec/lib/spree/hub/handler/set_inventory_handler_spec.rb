@@ -9,20 +9,22 @@ module Spree
       describe "process" do
 
         context "with stock item present" do
+          let!(:stock_location) { create(:stock_location, name: 'us_warehouse')}
           let!(:variant) { create(:variant, :sku => 'SPREE-T-SHIRT') }
-          let!(:stock_item) { variant.stock_items.first }
-
-          before do
-            Spree::StockItem.stub(:find_by_id).and_return(stock_item)
+          let!(:stock_item) do
+            item = variant.stock_items.first
+            item.stock_location = stock_location
+            item.save
+            item
           end
 
           it "will set the inventory to the supplied amount" do
-            expect{handler.process}.to change{stock_item.count_on_hand}.from(0).to(93)
+            expect{handler.process}.to change{stock_item.reload.count_on_hand}.from(0).to(93)
           end
 
           it "returns a Hub::Responder with a proper message" do
             responder = handler.process
-            expect(responder.summary).to eql "Set inventory for StockItem with id 12 from 0 to 93"
+            expect(responder.summary).to eql "Set inventory for SPREE-T-SHIRT at us_warehouse from 0 to 93"
             expect(responder.code).to eql 200
           end
         end
@@ -30,7 +32,7 @@ module Spree
         context "with stock item not present" do
           it "returns a Hub::Responder with 500 status" do
             responder = handler.process
-            expect(responder.summary).to eql "StockItem with id 12 was not found"
+            expect(responder.summary).to eql "Stock location with name us_warehouse was not found"
             expect(responder.code).to eql 500
           end
         end

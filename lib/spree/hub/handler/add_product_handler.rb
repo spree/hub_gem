@@ -1,56 +1,72 @@
+require 'open-uri'
+
 module Spree
   module Hub
     module Handler
-      class AddProductHandler < Base
-        attr_reader :params, :options, :taxon_ids, :parent_id
-
-        def initialize(message)
-          super message
-
-          @params = @payload[:product]
-          @parent_id = params[:parent_id]
-          @taxon_ids = []
-
-          params.delete :options
-          params.delete :properties
-          params.delete :images
-          params.delete :parent_id
-
-          params[:slug] = params.delete :permalink if params[:permalink].present?
-
-          # FIXME Getting errors like this for nested taxons:
-          #
-          #   NoMethodError:
-          #   undefined method `touch' for nil:NilClass
-          #   .../spree-fa1cb8c1d3a8/core/app/models/spree/taxon.rb:87:in `touch_ancestors_and_taxonomy'
-          #
-          params.delete :taxons
-        end
+      class AddProductHandler < ProductHandlerBase
 
         def process
-          params.delete :channel
-          params.delete :id
 
-          set_up_shipping_category
+          if Spree::Variant.find_by_sku(@params[:sku])
+            return response "Product with SKU #{@params[:sku]} already exists!", 500
+          end
 
-          @product = Core::Importer::Product.new(nil, params).create
+          # Disable the after_touch callback on taxons
+          Spree::Product.skip_callback(:touch, :after, :touch_taxons)
 
-          if @product.persisted?
-            response "Product (#{@product.id}) and master variant (#{@product.master.id}) created"
+          Spree::Product.transaction do
+            @product = process_root_product(root_product_attrs)
+            process_images(@product.master, @master_images)
+            process_child_products(@product, children_params) if @children_params
+          end
+
+          if @product.valid?
+            # set it again, and touch the product
+            Spree::Product.set_callback(:touch, :after, :touch_taxons)
+            @product.touch
+
+            if @product.variants.count > 0
+              response "Product #{@product.sku} added, with child skus: #{@product.variants.pluck(:sku)}"
+            else
+              response "Product #{@product.sku} added"
+            end
           else
-            response "Could not save the Product #{@product.errors.messages.inspect}", 500
+            response "Cannot add the product due to validation errors", 500
           end
         end
 
-        private
-          def set_up_shipping_category
-            id = ShippingCategory.find_or_create_by(name: shipping_category).id
-            params[:shipping_category_id] = id
+        # the Spree::Product and Spree::Variant master
+        # it's the top level 'product'
+        def process_root_product(params)
+          product = Spree::Product.create!(params)
+
+          process_option_types(product, @root_options)
+          process_properties(product, @properties)
+
+          product
+        end
+
+        # adding variants to the product based on the children hash
+        def process_child_products(product, children)
+          return unless children.present?
+
+          children.each do |child_product|
+
+            # used for possible assembly feature.
+            quantity = child_product.delete(:quantity)
+
+            option_type_values = child_product.delete(:options)
+
+            child_product[:options] = option_type_values.collect {|k,v| {name: k, value: v} }
+
+            images = child_product.delete(:images)
+
+            variant = product.variants.create({ product: product }.merge(child_product))
+            process_images(variant, images)
           end
 
-          def shipping_category
-            params.delete(:shipping_category) || parameters["spree_shipping_category"] || "Default"
-          end
+        end
+
       end
     end
   end
