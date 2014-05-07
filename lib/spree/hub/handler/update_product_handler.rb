@@ -6,6 +6,7 @@ module Spree
       class UpdateProductHandler < ProductHandlerBase
 
         def process
+          id = params.delete(:id)
           product = Spree::Variant.where(is_master: true, sku: params[:sku]).first.product
           return response("Cannot find product with SKU #{params[:sku]}!", 500) unless product
 
@@ -59,7 +60,7 @@ module Spree
 
             images = child_product.delete(:images)
 
-            product.variants.find(child_product['id'].to_i).update_attributes(child_product)
+            #product.variants.find_by_sku(child_product['sku']).update_attributes(child_product)
 
             variant = product.variants.find_by_sku(child_product[:sku])
             if variant

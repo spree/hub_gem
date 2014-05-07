@@ -3,12 +3,16 @@ require 'spec_helper'
 module Spree
   module Hub
     describe Handler::UpdateProductHandler do
+
+      before do
+        img_fixture = File.open(File.expand_path('../../../../../fixtures/thinking-cat.jpg', __FILE__))
+        Handler::UpdateProductHandler.any_instance.stub(:open).and_return img_fixture
+      end
+
       context "#process" do
         let!(:message) do
           hsh = ::Hub::Samples::Product.request
           hsh["product"]["permalink"] = "other-permalink-then-name"
-          hsh["product"].delete "images"
-          #hsh["product"].delete "variants"
           hsh
         end
 
@@ -22,10 +26,10 @@ module Spree
           }.not_to change{ Spree::Product.count }
         end
 
-        it "updates existing variant in the storefront" do
+        it "adds new variant in the storefront" do
           expect {
             handler.process
-          }.not_to change { Spree::Variant.count }
+          }.to change { Spree::Variant.count }.by 1
         end
 
         context "and with a permalink" do
