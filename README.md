@@ -21,6 +21,8 @@ Add the hub credentials to `config/initializers/spree.rb`:
 
 ```ruby
 Spree::Hub::Config[:hub_token] = "sdfsfddfdss"
+Spree::Hub::Config[:hub_store_id] = "sdfsfddfdss"
+
 Spree::Hub::Config[:enable_push] = true
 ```
 
