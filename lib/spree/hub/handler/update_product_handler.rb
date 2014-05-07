@@ -60,8 +60,6 @@ module Spree
 
             images = child_product.delete(:images)
 
-            #product.variants.find_by_sku(child_product['sku']).update_attributes(child_product)
-
             variant = product.variants.find_by_sku(child_product[:sku])
             if variant
               variant.update_attributes(child_product)
