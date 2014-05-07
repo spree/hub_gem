@@ -11,8 +11,8 @@ module Spree
       context "format" do
 
         # Note: might use the name here, or add another readeable id to locations.
-        it "serializes the stock_location_id for the 'location'" do
-          expect(JSON.parse(serialized_stock_item)["location"]).to eql stock_item.stock_location_id
+        it "serializes the StockLocation name for the 'location'" do
+          expect(JSON.parse(serialized_stock_item)["location"]).to eql stock_item.stock_location.name
         end
 
         it "serializes the variant sku for product_id" do
