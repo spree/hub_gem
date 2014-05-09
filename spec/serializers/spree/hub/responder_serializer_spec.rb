@@ -23,6 +23,11 @@ module Spree
         expect(ResponderSerializer.new(responder, root: false).to_json).to eql json_response
       end
 
+      it "will not serialize objects when it's nil" do
+        json_response = "{\"request_id\":\"12355\",\"summary\":\"Order abc124 was added\"}"
+        expect(ResponderSerializer.new(responder, root: false).to_json).to eql json_response
+      end
+
     end
   end
 end
