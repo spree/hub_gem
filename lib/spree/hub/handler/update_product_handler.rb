@@ -34,7 +34,7 @@ module Spree
           set_up_shipping_category
 
           unless master = Variant.find_by(sku: params[:sku], is_master: true)
-            response("Could not find product wih sku #{paramas[:sku]}", 500) and return
+            response("Could not find product wih sku #{params[:sku]}", 500) and return
           end
 
           @product = Core::Importer::Product.new(master.product, params).update
