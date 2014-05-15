@@ -12,6 +12,7 @@ module Spree
       end
 
       it "pushes serialized JSON after saved" do
+        order.stub(:complete?).and_return(true)
         expect(order).to receive(:push_to_hub)
         order.save!
       end
