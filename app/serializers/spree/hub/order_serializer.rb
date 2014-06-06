@@ -9,7 +9,8 @@ module Spree
 
       has_many :line_items,  serializer: Spree::Hub::LineItemSerializer
       has_many :payments, serializer: Spree::Hub::PaymentSerializer
-
+      has_many :shipments, serializer: Spree::Hub::ShippingSerializer
+      
       has_one :shipping_address, serializer: Spree::Hub::AddressSerializer
       has_one :billing_address, serializer: Spree::Hub::AddressSerializer
 
