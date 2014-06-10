@@ -32,12 +32,12 @@ module Spree
 
           before do
             Spree::Variant.stub(:find_by_sku).and_return(order.variants.first)
-            shipment.stub(:order).and_return order
+            Spree::Shipment.any_instance.stub(:order).and_return order
           end
 
           it "will return a proper message" do
             responder = handler.process
-            expect(responder.summary).to eql "Updated shipment #{shipment.number}"
+            expect(responder.summary).to eql "Updated shipment #{shipment.number} for order #{order.number}"
             expect(responder.code).to eql 200
           end
 
